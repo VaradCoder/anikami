@@ -1,0 +1,68 @@
+.anime-player-shell,
+.anime-player-target {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+}
+
+.anime-player-shell[data-player-mode="video"] .anime-player-video,
+.anime-player-shell[data-player-mode="iframe"] .anime-player-iframe {
+    display: block;
+}
+
+.anime-player-shell[data-player-mode="video"] .anime-player-iframe,
+.anime-player-shell[data-player-mode="iframe"] .anime-player-video,
+.anime-player-shell[data-player-mode="loading"] .anime-player-video,
+.anime-player-shell[data-player-mode="loading"] .anime-player-iframe {
+    display: none;
+}
+
+.anime-player-video {
+    background: #000;
+    object-fit: contain;
+}
+
+.player-frame iframe.anime-player-iframe,
+.player-frame .anime-player-video {
+    position: absolute;
+    inset: 0;
+    width: 100% !important;
+    height: 100% !important;
+    border: 0;
+}
+
+.player-empty-state {
+    color: #fff;
+    padding: 20px;
+    text-align: center;
+}
+
+#source-guide {
+    padding-top: 8px;
+}
+
+.pm-guide {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.pm-pill {
+    display: inline-flex;
+    align-items: center;
+    padding: 4px 10px;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    color: #f7f7f7;
+    font-size: 12px;
+    line-height: 1.2;
+}
+
+@media (max-width: 767px) {
+    .pm-pill {
+        font-size: 11px;
+        padding: 4px 8px;
+    }
+}

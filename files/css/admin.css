@@ -1,0 +1,152 @@
+/* ── Admin Panel Shell ──────────────────────────────────────────────
+   Reuses the public site's CSS variables (--accent, --bg-card, etc,
+   defined in anikami.css) so the admin area matches the site's theme
+   instead of looking like a different product. */
+
+.ak-admin-body { display: flex; min-height: 100vh; background: var(--bg-main); }
+
+/* ── Sidebar ── */
+.ak-admin-sidebar {
+  width: 230px; flex-shrink: 0; background: var(--bg-secondary);
+  border-right: 1px solid rgba(255,255,255,.06);
+  display: flex; flex-direction: column; height: 100vh; position: sticky; top: 0;
+  overflow-y: auto;
+}
+.ak-admin-brand {
+  padding: 16px 18px;
+  font-family: 'Cinzel', serif; font-weight: 700; font-size: 16px; color: var(--text-main);
+  border-bottom: 1px solid rgba(255,255,255,.06);
+}
+.ak-admin-brand i { color: var(--accent); }
+.ak-admin-brand-sub { font-family: 'Montserrat', sans-serif; font-size: 10.5px; font-weight: 500; color: var(--text-muted); margin-top: 2px; letter-spacing: .3px; }
+.ak-admin-brand-meta { display: flex; flex-direction: column; gap: 4px; margin-top: 10px; font-family: 'Montserrat', sans-serif; font-size: 10.5px; font-weight: 500; color: var(--text-muted); }
+.ak-admin-brand-meta span { display: flex; align-items: center; gap: 6px; }
+.ak-admin-brand-meta i.fa-server { font-size: 9px; }
+.ak-admin-brand-meta .dev { color: #f59e0b; }
+.ak-admin-nav { padding: 10px 10px 24px; flex: 1; }
+.ak-admin-group { margin-bottom: 4px; }
+.ak-admin-group-label {
+  font-size: 10.5px; text-transform: uppercase; letter-spacing: .6px;
+  color: var(--text-muted); padding: 14px 10px 6px;
+}
+.ak-admin-link {
+  display: flex; align-items: center; gap: 10px; padding: 9px 10px; border-radius: 8px;
+  color: var(--text-secondary); text-decoration: none; font-size: 13px; font-weight: 500;
+  transition: background .15s, color .15s;
+}
+.ak-admin-link i { width: 16px; text-align: center; color: var(--text-muted); font-size: 13px; }
+.ak-admin-link:hover { background: var(--bg-card); color: var(--text-main); }
+.ak-admin-link.active { background: rgba(200,16,46,.12); color: var(--text-main); }
+.ak-admin-link.active i { color: var(--accent); }
+.ak-admin-link.planned { color: var(--text-muted); cursor: default; opacity: .55; }
+.ak-admin-link.planned:hover { background: none; color: var(--text-muted); }
+.ak-admin-link.planned .ak-admin-soon {
+  margin-left: auto; font-size: 9px; background: rgba(255,255,255,.08); border-radius: 4px;
+  padding: 1px 5px; letter-spacing: .3px;
+}
+
+/* ── Main area ── */
+.ak-admin-main { flex: 1; min-width: 0; }
+.ak-admin-topbar {
+  display: flex; align-items: center; justify-content: space-between; gap: 16px;
+  padding: 16px 24px; border-bottom: 1px solid rgba(255,255,255,.06); background: var(--bg-main);
+  position: sticky; top: 0; z-index: 5;
+}
+.ak-admin-topbar h1 { font-size: 18px; font-weight: 700; color: var(--text-main); }
+.ak-admin-topbar-meta { display: flex; align-items: center; gap: 14px; font-size: 12.5px; color: var(--text-muted); }
+.ak-admin-topbar-meta a { color: var(--text-secondary); text-decoration: none; }
+.ak-admin-topbar-meta a:hover { color: var(--accent); }
+.ak-admin-content { padding: 22px 24px 60px; }
+
+/* ── KPI cards ── */
+.ak-kpi-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 14px; margin-bottom: 22px; }
+.ak-kpi-card {
+  background: var(--bg-card); border: 1px solid rgba(255,255,255,.06); border-radius: var(--radius-md);
+  padding: 16px 18px;
+}
+.ak-kpi-label { font-size: 11.5px; color: var(--text-muted); margin-bottom: 6px; display: flex; align-items: center; gap: 6px; }
+.ak-kpi-value { font-size: 24px; font-weight: 700; color: var(--text-main); line-height: 1.2; }
+.ak-kpi-sub { font-size: 11px; color: var(--text-muted); margin-top: 4px; }
+.ak-kpi-sub.up { color: #22c55e; }
+.ak-kpi-card.warn .ak-kpi-value { color: #f59e0b; }
+.ak-kpi-card.danger .ak-kpi-value { color: #ef4444; }
+
+/* ── Panels ── */
+.ak-admin-panel {
+  background: var(--bg-card); border: 1px solid rgba(255,255,255,.06); border-radius: var(--radius-md);
+  padding: 18px 20px; margin-bottom: 20px;
+}
+.ak-admin-panel h3 {
+  font-size: 13.5px; font-weight: 700; color: var(--text-main); margin-bottom: 14px;
+  display: flex; align-items: center; gap: 8px; justify-content: space-between;
+}
+.ak-admin-panel h3 i { color: var(--accent); }
+.ak-admin-grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
+@media (max-width: 900px) { .ak-admin-grid-2 { grid-template-columns: 1fr; } }
+
+/* ── Tables ── */
+.ak-admin-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+.ak-admin-table th {
+  text-align: left; font-size: 11px; text-transform: uppercase; letter-spacing: .4px;
+  color: var(--text-muted); padding: 8px 10px; border-bottom: 1px solid rgba(255,255,255,.08);
+}
+.ak-admin-table td { padding: 10px; border-bottom: 1px solid rgba(255,255,255,.05); color: var(--text-secondary); vertical-align: middle; }
+.ak-admin-table tr:hover td { background: rgba(255,255,255,.02); }
+.ak-admin-table a.ak-row-link { color: var(--text-main); text-decoration: none; font-weight: 600; }
+.ak-admin-table a.ak-row-link:hover { color: var(--accent); }
+
+/* ── Badges / status dots ── */
+.ak-badge { display: inline-flex; align-items: center; gap: 5px; padding: 2px 8px; border-radius: 5px; font-size: 11px; font-weight: 600; }
+.ak-badge.role-admin { background: rgba(200,16,46,.15); color: #ff6b81; }
+.ak-badge.role-user { background: rgba(255,255,255,.06); color: var(--text-secondary); }
+.ak-badge.status-active { background: rgba(34,197,94,.12); color: #22c55e; }
+.ak-badge.status-banned { background: rgba(239,68,68,.12); color: #ef4444; }
+.ak-badge.status-suspended { background: rgba(245,158,11,.12); color: #f59e0b; }
+.ak-dot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; }
+.ak-dot.healthy { background: #22c55e; box-shadow: 0 0 6px rgba(34,197,94,.6); }
+.ak-dot.degraded { background: #f59e0b; box-shadow: 0 0 6px rgba(245,158,11,.6); }
+.ak-dot.offline { background: #ef4444; box-shadow: 0 0 6px rgba(239,68,68,.6); }
+
+/* ── Buttons ── */
+.ak-abtn {
+  display: inline-flex; align-items: center; gap: 6px; padding: 7px 13px; border-radius: 7px;
+  font-size: 12px; font-weight: 600; border: 1px solid rgba(255,255,255,.12); background: rgba(255,255,255,.05);
+  color: var(--text-secondary); cursor: pointer; text-decoration: none; transition: background .15s;
+}
+.ak-abtn:hover { background: rgba(255,255,255,.1); color: var(--text-main); }
+.ak-abtn.primary { background: var(--accent); border-color: var(--accent); color: #fff; }
+.ak-abtn.primary:hover { background: var(--accent-hover); }
+.ak-abtn.danger { background: rgba(239,68,68,.12); border-color: rgba(239,68,68,.3); color: #fca5a5; }
+.ak-abtn.danger:hover { background: rgba(239,68,68,.22); }
+.ak-abtn.warn { background: rgba(245,158,11,.12); border-color: rgba(245,158,11,.3); color: #fcd34d; }
+.ak-abtn.warn:hover { background: rgba(245,158,11,.22); }
+.ak-abtn.sm { padding: 4px 9px; font-size: 11px; }
+
+.ak-admin-input {
+  background: var(--bg-secondary); border: 1px solid rgba(255,255,255,.1); border-radius: 7px;
+  padding: 8px 12px; font-size: 12.5px; color: var(--text-main); outline: none;
+}
+.ak-admin-input:focus { border-color: var(--accent); }
+
+.ak-admin-empty { text-align: center; padding: 30px; color: var(--text-muted); font-size: 13px; }
+
+/* ── Activity feed ── */
+.ak-feed { list-style: none; max-height: 360px; overflow-y: auto; }
+.ak-feed li { display: flex; gap: 10px; padding: 9px 0; border-bottom: 1px solid rgba(255,255,255,.05); font-size: 12.5px; }
+.ak-feed li:last-child { border-bottom: none; }
+.ak-feed-icon { width: 26px; height: 26px; border-radius: 50%; background: rgba(200,16,46,.12); color: var(--accent);
+  display: flex; align-items: center; justify-content: center; font-size: 11px; flex-shrink: 0; }
+.ak-feed-text { color: var(--text-secondary); }
+.ak-feed-text b { color: var(--text-main); }
+.ak-feed-time { margin-left: auto; color: var(--text-muted); font-size: 11px; white-space: nowrap; }
+
+/* ── Simple bar sparkline (no chart.js dependency) ── */
+.ak-spark { display: flex; align-items: flex-end; gap: 3px; height: 60px; }
+.ak-spark-bar { flex: 1; background: var(--accent); border-radius: 2px 2px 0 0; opacity: .85; min-height: 2px; }
+.ak-spark-bar:hover { opacity: 1; }
+
+@media (max-width: 860px) {
+  .ak-admin-sidebar { position: fixed; left: -230px; z-index: 50; transition: left .2s; }
+  .ak-admin-sidebar.open { left: 0; }
+  .ak-admin-content { padding: 16px; }
+}

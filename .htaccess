@@ -1,0 +1,121 @@
+RewriteEngine On
+RewriteBase /anikatsu/
+
+# ── Gzip/Deflate compression ──────────────────────────────────────
+<IfModule mod_deflate.c>
+  AddOutputFilterByType DEFLATE text/html text/plain text/xml text/css
+  AddOutputFilterByType DEFLATE application/javascript application/x-javascript
+  AddOutputFilterByType DEFLATE application/json application/xml
+  AddOutputFilterByType DEFLATE image/svg+xml
+  # Don't compress already-compressed formats
+  SetEnvIfNoCase Request_URI \.(jpe?g|png|gif|webp|gz|zip|woff2)$ no-gzip
+</IfModule>
+
+# ── Browser caching for static assets ────────────────────────────
+<IfModule mod_expires.c>
+  ExpiresActive On
+  ExpiresByType image/jpeg           "access plus 7 days"
+  ExpiresByType image/png            "access plus 7 days"
+  ExpiresByType image/webp           "access plus 7 days"
+  ExpiresByType image/gif            "access plus 7 days"
+  ExpiresByType image/svg+xml        "access plus 7 days"
+  ExpiresByType image/x-icon         "access plus 30 days"
+  ExpiresByType text/css             "access plus 1 day"
+  ExpiresByType application/javascript "access plus 1 day"
+  ExpiresByType font/woff2           "access plus 30 days"
+  ExpiresByType application/x-font-woff "access plus 30 days"
+</IfModule>
+
+# ── Cache-Control for static files ───────────────────────────────
+<IfModule mod_headers.c>
+  <FilesMatch "\.(css|js)$">
+    Header set Cache-Control "public, max-age=86400, stale-while-revalidate=3600"
+  </FilesMatch>
+  <FilesMatch "\.(jpe?g|png|gif|webp|ico|woff2?)$">
+    Header set Cache-Control "public, max-age=604800, immutable"
+  </FilesMatch>
+</IfModule>
+
+# ── Security headers ──────────────────────────────────────────────
+<IfModule mod_headers.c>
+  Header always set X-Content-Type-Options "nosniff"
+  Header always set X-Frame-Options "SAMEORIGIN"
+  Header always set Referrer-Policy "strict-origin-when-cross-origin"
+  Header always set X-XSS-Protection "1; mode=block"
+  Header always set Permissions-Policy "camera=(), microphone=(), geolocation=()"
+  # Remove server fingerprint headers
+  Header always unset X-Powered-By
+  Header always unset Server
+</IfModule>
+
+<FilesMatch "^(_config\.php|\.env|composer\.(json|lock))$">
+    Require all denied
+</FilesMatch>
+
+RewriteRule ^(includes|data|cache)/ - [F,L,NC]
+
+# Static assets
+RewriteRule ^files/ - [L]
+RewriteRule ^favicon\.ico$ - [L]
+RewriteRule ^sw\.js$ - [L]
+RewriteRule ^manifest\.json$ - [L]
+
+# Internal API
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteRule ^api/(.*)$ api/$1 [L]
+
+RewriteRule ^admin/.*\.php$ - [L]
+RewriteRule ^admin/?$ admin/index.php [L,QSA,NC]
+RewriteRule ^login/?$ login.php [L,QSA,NC]
+RewriteRule ^register/?$ register.php [L,QSA,NC]
+RewriteRule ^profile/?$ profile.php [L,QSA,NC]
+RewriteRule ^logout/?$ logout.php [L,QSA,NC]
+
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^anime/(.+)$ animeDetails.php?anime=$1 [QSA,L]
+RewriteRule ^watch/(.+)$ streaming.php?episode=$1 [QSA,L]
+RewriteRule ^genre/?$ genre/id.php [QSA,L]
+RewriteRule ^genre/(.+)$ genre/id.php?genre=$1 [QSA,L]
+RewriteRule ^type/?$ type/id.php [QSA,L]
+RewriteRule ^type/(.+)$ type/id.php?type=$1 [QSA,L]
+RewriteRule ^status/?$ status/id.php [QSA,L]
+RewriteRule ^status/(.+)$ status/id.php?status=$1 [QSA,L]
+RewriteRule ^sub-category/(.+)$ sub-category/id.php?subCategory=$1 [QSA,L]
+RewriteCond %{REQUEST_URI} !\.php$
+RewriteRule ^latest/(.+)$ latest/$1.php [QSA,L]
+RewriteRule ^az-list/(.+)$ az-list/id.php?letter=$1 [QSA,L]
+RewriteRule ^az/(.+)$ az-list/id.php?letter=$1 [QSA,L]
+RewriteRule ^search$ search.php [QSA,L]
+RewriteRule ^popular$ popular.php [QSA,L]
+RewriteRule ^new-season$ new-season.php [QSA,L]
+RewriteRule ^random$ random.php [QSA,L]
+RewriteRule ^schedule$ schedule.php [QSA,L]
+RewriteRule ^anime$ anime.php [QSA,L]
+
+RewriteRule ^sitemaps/recentCN-sitemap\.xml$ sitemaps/recentCN-sitemap.php [L,QSA,NC]
+RewriteRule ^sitemaps/recentDUB-sitemap\.xml$ sitemaps/recentDUB-sitemap.php [L,QSA,NC]
+RewriteRule ^sitemaps/recentSUB-sitemap\.xml$ sitemaps/recentSUB-sitemap.php [L,QSA,NC]
+RewriteRule ^sitemaps/ongoing-sitemap\.xml$ sitemaps/ongoing-sitemap.php [L,QSA,NC]
+RewriteRule ^sitemaps/allanime-sitemap\.xml$ sitemaps/allanime-sitemap.php [L,QSA,NC]
+RewriteRule ^sitemaps/sitemap\.xml$ sitemaps/sitemap.php [L,QSA,NC]
+RewriteRule ^sitemap\.xml$ sitemap.php [L,QSA,NC]
+
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteRule ^$ index.php [L]
+RewriteRule ^home/?$ home.php [L]
+
+# Map PHP files by DirectoryIndex defaults as needed
+DirectoryIndex index.php
+
+# Never leak a raw directory listing for folders with no matching rewrite
+# rule (this is exactly how /genre/ and /type/?type=... were exposing bare
+# Apache "Index of /..." pages instead of 404s before routes were added).
+Options -Indexes
+
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteRule ^(([A-Za-z0-9\-]+/)*[A-Za-z0-9\-]+)?$ $1.php [L,QSA]
+
+
+ErrorDocument 404 /404.php

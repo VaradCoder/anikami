@@ -1,0 +1,17 @@
+User-agent: *
+Disallow: /admin/
+Disallow: /api/
+Disallow: /cache/
+Disallow: /data/
+Disallow: /includes/
+Disallow: /app/
+Disallow: /login
+Disallow: /register
+Disallow: /profile
+Disallow: /logout
+Disallow: /_deprecated/
+Disallow: /files/js/_deprecated/
+Disallow: /files/css/_deprecated/
+
+# Sitemaps
+Sitemap: /anikatsu/sitemap.xml

@@ -1,0 +1,722 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Anikami — Watch Anime Online Free</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700&family=Montserrat:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<style>
+:root{
+  --bg-main:#07060d;
+  --bg-secondary:#0d0b17;
+  --bg-card:#130f1e;
+  --bg-card-hover:#1c1729;
+  --bg-card-lift:#251f35;
+  --accent:#c8102e;
+  --accent-hover:#e8192e;
+  --accent-glow:#ff2a4a;
+  --text-main:#f0eaf7;
+  --text-secondary:#9b93b0;
+  --text-muted:#5e5677;
+  --border-soft:rgba(200,16,46,0.18);
+  --radius-sm:8px;
+  --radius-md:12px;
+  --radius-lg:16px;
+  --header-h:72px;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{font-family:'Montserrat',sans-serif;background:var(--bg-main);color:var(--text-main);font-size:14px;line-height:1.4;overflow-x:hidden}
+a{color:var(--text-main);text-decoration:none;transition:color .2s}
+a:hover{color:var(--accent-glow)}
+ul{list-style:none}
+img{max-width:100%;display:block}
+::-webkit-scrollbar{width:6px;height:6px}
+::-webkit-scrollbar-thumb{background:var(--accent);border-radius:3px}
+::-webkit-scrollbar-track{background:var(--bg-card)}
+
+/* ===== HEADER ===== */
+#header{position:fixed;top:0;left:0;right:0;z-index:999;background:rgba(7,6,13,.96);backdrop-filter:blur(14px);border-bottom:1px solid var(--border-soft);height:var(--header-h)}
+.header-inner{display:flex;align-items:center;gap:14px;max-width:1400px;margin:0 auto;padding:0 20px;height:100%}
+.brand{font-family:'Cinzel',serif;font-size:26px;font-weight:700;background:linear-gradient(135deg,#fff 30%,var(--accent));-webkit-background-clip:text;-webkit-text-fill-color:transparent;white-space:nowrap}
+.brand sub{font-size:10px;font-family:'Montserrat',sans-serif;-webkit-text-fill-color:var(--text-secondary);display:block;text-align:center;letter-spacing:2px;font-weight:400;margin-top:-4px}
+.search-wrap{flex:1;max-width:560px;position:relative}
+.search-wrap input{width:100%;height:42px;background:rgba(255,255,255,.97);border:none;border-radius:10px;padding:0 44px 0 16px;font-size:14px;color:#111;outline:none}
+.search-wrap input::placeholder{color:#888}
+.search-wrap button{position:absolute;right:0;top:0;height:42px;width:44px;background:transparent;border:none;cursor:pointer;color:#555;font-size:16px}
+.header-nav{display:flex;align-items:center;gap:6px}
+.header-nav a{display:flex;align-items:center;gap:6px;padding:8px 12px;border-radius:8px;font-size:13px;color:var(--text-secondary);transition:all .2s}
+.header-nav a:hover,.header-nav a.active{color:#fff;background:rgba(255,255,255,.08)}
+.header-nav a.active{color:var(--accent)}
+.header-nav a.active::after{content:'';display:inline-block;width:5px;height:5px;background:var(--accent);border-radius:50%}
+.header-actions{display:flex;align-items:center;gap:8px;margin-left:auto}
+.icon-btn{width:38px;height:38px;border-radius:8px;background:rgba(255,255,255,.07);border:none;color:#fff;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:15px;transition:background .2s}
+.icon-btn:hover{background:rgba(255,255,255,.15)}
+.btn-discord{display:flex;align-items:center;gap:6px;padding:8px 14px;border-radius:8px;background:#5865f2;color:#fff;font-size:13px;font-weight:500;border:none;cursor:pointer;transition:background .2s}
+.btn-discord:hover{background:#4752c4;color:#fff}
+.btn-telegram{display:flex;align-items:center;gap:6px;padding:8px 14px;border-radius:8px;background:#229ed9;color:#fff;font-size:13px;font-weight:500;border:none;cursor:pointer;transition:background .2s}
+.btn-telegram:hover{background:#1a8abf;color:#fff}
+.btn-login{padding:9px 20px;border-radius:8px;background:var(--accent);color:#fff;font-size:13px;font-weight:600;border:none;cursor:pointer;transition:background .2s}
+.btn-login:hover{background:var(--accent-hover)}
+
+/* ===== LEFT SIDEBAR ===== */
+#leftnav{position:fixed;top:var(--header-h);left:0;width:72px;height:calc(100vh - var(--header-h));background:var(--bg-secondary);border-right:1px solid rgba(255,255,255,.05);z-index:100;display:flex;flex-direction:column;align-items:center;padding:16px 0;gap:4px;overflow-y:auto}
+.lnav-item{display:flex;flex-direction:column;align-items:center;gap:4px;padding:10px 8px;border-radius:10px;color:var(--text-muted);font-size:10px;width:60px;text-align:center;cursor:pointer;transition:all .2s;text-decoration:none}
+.lnav-item i{font-size:20px}
+.lnav-item:hover,.lnav-item.active{color:var(--accent);background:rgba(200,16,46,.12)}
+
+/* ===== MAIN LAYOUT ===== */
+#main-wrap{margin-left:72px;margin-top:var(--header-h);display:flex;min-height:calc(100vh - var(--header-h))}
+#content{flex:1;min-width:0;padding:0}
+#sidebar{width:320px;flex:0 0 auto;padding:20px 16px;border-left:1px solid rgba(255,255,255,.05)}
+
+/* ===== HERO SLIDER ===== */
+.hero-slider{position:relative;width:100%;height:400px;overflow:hidden;background:#0d0b17}
+.hero-slide{position:relative;width:100%;height:100%;background:linear-gradient(135deg,#1a0010 0%,#0d0010 40%,#1a0a1a 100%)}
+.hero-bg{position:absolute;inset:0;background-image:url('https://picsum.photos/seed/dxd/1400/400');background-size:cover;background-position:center top;opacity:.35;filter:blur(2px)}
+.hero-overlay{position:absolute;inset:0;background:linear-gradient(90deg,rgba(10,2,10,.92) 0%,rgba(10,2,10,.55) 55%,transparent 100%)}
+.hero-content{position:relative;z-index:2;padding:40px 50px;display:flex;flex-direction:column;justify-content:center;height:100%;max-width:520px}
+.hero-logo{font-family:'Cinzel',serif;font-size:46px;font-weight:700;color:#fff;text-shadow:0 0 30px rgba(200,16,46,.6);line-height:1;margin-bottom:12px;letter-spacing:-1px}
+.hero-logo span{color:var(--accent)}
+.hero-tags{display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap}
+.hero-tag{padding:4px 12px;border-radius:4px;font-size:11px;font-weight:600;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.2);color:#fff}
+.hero-tag.red{background:rgba(200,16,46,.4);border-color:var(--accent)}
+.hero-tag.blue{background:rgba(29,78,216,.4);border-color:#3b82f6}
+.hero-desc{font-size:13px;color:rgba(240,234,247,.7);line-height:1.6;margin-bottom:22px;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
+.hero-actions{display:flex;gap:10px;align-items:center}
+.btn-watch{display:flex;align-items:center;gap:8px;padding:12px 24px;background:var(--accent);color:#fff;border-radius:8px;font-weight:600;font-size:14px;border:none;cursor:pointer;transition:all .2s}
+.btn-watch:hover{background:var(--accent-hover);box-shadow:0 0 20px rgba(200,16,46,.5);color:#fff}
+.btn-info{display:flex;align-items:center;gap:8px;padding:12px 20px;background:rgba(255,255,255,.12);color:#fff;border-radius:8px;font-weight:500;font-size:14px;border:1px solid rgba(255,255,255,.2);cursor:pointer;transition:all .2s}
+.btn-info:hover{background:rgba(255,255,255,.2);color:#fff}
+.hero-char{position:absolute;right:0;bottom:0;height:110%;z-index:1;pointer-events:none;filter:drop-shadow(-30px 0 60px rgba(200,16,46,.4))}
+.hero-dots{position:absolute;bottom:16px;left:50%;transform:translateX(-50%);display:flex;gap:6px;z-index:3}
+.hero-dot{width:8px;height:8px;border-radius:50%;background:rgba(255,255,255,.3);cursor:pointer;transition:all .2s}
+.hero-dot.active{background:var(--accent);width:24px;border-radius:4px}
+.hero-arrow{position:absolute;top:50%;transform:translateY(-50%);z-index:3;width:36px;height:36px;border-radius:50%;background:rgba(0,0,0,.5);border:1px solid rgba(255,255,255,.15);color:#fff;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all .2s}
+.hero-arrow:hover{background:var(--accent)}
+.hero-arrow.left{left:16px}
+.hero-arrow.right{right:16px}
+
+/* ===== QUICK NAV STRIP ===== */
+.quick-nav{background:var(--bg-card);border-bottom:1px solid rgba(255,255,255,.06);padding:16px 24px}
+.quick-nav-inner{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;max-width:700px}
+.qn-item{display:flex;align-items:center;gap:12px;padding:12px 16px;border-radius:10px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.07);cursor:pointer;transition:all .2s}
+.qn-item:hover{border-color:var(--accent);background:rgba(200,16,46,.08)}
+.qn-icon{width:38px;height:38px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:18px;flex:0 0 auto}
+.qn-icon.orange{background:rgba(245,158,11,.15);color:#f59e0b}
+.qn-icon.blue{background:rgba(59,130,246,.15);color:#60a5fa}
+.qn-icon.green{background:rgba(16,185,129,.15);color:#34d399}
+.qn-icon.pink{background:rgba(236,72,153,.15);color:#f472b6}
+.qn-title{font-size:13px;font-weight:600;color:#fff}
+.qn-sub{font-size:11px;color:var(--text-muted)}
+
+/* ===== COMMUNITY BANNER ===== */
+.community-banner{margin:20px 24px;border-radius:14px;background:linear-gradient(135deg,rgba(30,15,35,.9),rgba(20,10,30,.9));border:1px solid rgba(200,16,46,.2);padding:18px 24px;display:flex;align-items:center;gap:16px;overflow:hidden;position:relative}
+.community-banner::before{content:'';position:absolute;inset:0;background:url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="60" height="60"><circle cx="30" cy="30" r="28" fill="none" stroke="rgba(200,16,46,0.06)" stroke-width="2"/></svg>') repeat;opacity:.5}
+.cb-text{flex:1;position:relative;z-index:1}
+.cb-title{font-size:15px;font-weight:600;color:#fff;margin-bottom:4px}
+.cb-sub{font-size:12px;color:var(--text-secondary)}
+.cb-actions{display:flex;gap:8px;position:relative;z-index:1}
+.cb-btn{display:flex;align-items:center;gap:6px;padding:8px 16px;border-radius:8px;font-size:12px;font-weight:600;border:none;cursor:pointer;transition:all .2s}
+.cb-btn.discord{background:#5865f2;color:#fff}
+.cb-btn.discord:hover{background:#4752c4}
+.cb-btn.telegram{background:#229ed9;color:#fff}
+.cb-btn.telegram:hover{background:#1a8abf}
+.cb-btn.reddit{background:#ff4500;color:#fff}
+.cb-btn.reddit:hover{background:#e03d00}
+.cb-chars{display:flex;gap:-8px;position:relative;z-index:1}
+.cb-char{width:50px;height:60px;border-radius:8px;overflow:hidden;border:2px solid rgba(200,16,46,.3)}
+.cb-char img{width:100%;height:100%;object-fit:cover}
+
+/* ===== SECTION HEADERS ===== */
+.section{padding:20px 24px}
+.section-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px}
+.section-title{display:flex;align-items:center;gap:8px;font-size:16px;font-weight:600;color:#fff}
+.section-title i{color:var(--accent)}
+.section-title .dot{width:6px;height:6px;border-radius:50%;background:var(--accent)}
+.view-all{font-size:12px;color:var(--text-secondary);display:flex;align-items:center;gap:4px;transition:color .2s}
+.view-all:hover{color:var(--accent-glow)}
+.section-nav{display:flex;gap:4px}
+.snav-btn{width:28px;height:28px;border-radius:6px;background:rgba(255,255,255,.08);border:none;color:#fff;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:12px;transition:background .2s}
+.snav-btn:hover{background:var(--accent)}
+
+/* ===== TRENDING SLIDER ===== */
+.trending-wrap{overflow-x:auto;padding-bottom:8px;cursor:grab}
+.trending-wrap::-webkit-scrollbar{height:3px}
+.trending-row{display:flex;gap:14px;min-width:max-content}
+.trending-card{width:140px;flex:0 0 auto;position:relative;cursor:pointer}
+.trending-card .poster{width:140px;height:200px;border-radius:10px;overflow:hidden;position:relative;border:2px solid transparent;transition:all .2s}
+.trending-card:hover .poster{border-color:var(--accent);box-shadow:0 8px 30px rgba(200,16,46,.35)}
+.trending-card .poster img{width:100%;height:100%;object-fit:cover;transition:transform .3s}
+.trending-card:hover .poster img{transform:scale(1.06)}
+.trending-num{position:absolute;top:-6px;left:-6px;width:30px;height:30px;border-radius:50%;background:var(--accent);color:#fff;font-size:13px;font-weight:700;display:flex;align-items:center;justify-content:center;box-shadow:0 2px 10px rgba(200,16,46,.5);z-index:2}
+.trending-num.top3{background:linear-gradient(135deg,#ffd700,#ff8c00);color:#1a0a00}
+.trending-title{font-size:12px;font-weight:500;margin-top:8px;color:var(--text-main);line-height:1.3;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.trending-meta{font-size:11px;color:var(--text-muted);margin-top:3px;display:flex;align-items:center;gap:4px}
+.trending-meta i{color:#fbbf24;font-size:10px}
+
+/* ===== CONTINUE WATCHING ===== */
+.cw-grid{display:flex;gap:14px;overflow-x:auto;padding-bottom:8px}
+.cw-card{width:170px;flex:0 0 auto;cursor:pointer;position:relative}
+.cw-thumb{width:170px;height:100px;border-radius:10px;overflow:hidden;position:relative;border:2px solid transparent;transition:all .2s}
+.cw-card:hover .cw-thumb{border-color:var(--accent)}
+.cw-thumb img{width:100%;height:100%;object-fit:cover}
+.cw-thumb .play-overlay{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,.4);opacity:0;transition:opacity .2s}
+.cw-card:hover .play-overlay{opacity:1}
+.play-overlay i{font-size:28px;color:#fff;text-shadow:0 2px 8px rgba(0,0,0,.8)}
+.cw-progress{position:absolute;bottom:0;left:0;right:0;height:3px;background:rgba(255,255,255,.2);border-radius:0 0 10px 10px}
+.cw-progress-fill{height:100%;background:var(--accent);border-radius:inherit}
+.cw-info{padding:8px 4px 0}
+.cw-title{font-size:12px;font-weight:500;color:var(--text-main);display:-webkit-box;-webkit-line-clamp:1;-webkit-box-orient:vertical;overflow:hidden}
+.cw-ep{font-size:11px;color:var(--text-muted);margin-top:2px}
+.cw-pct{font-size:10px;color:var(--text-secondary);margin-top:2px;display:flex;align-items:center;gap:4px}
+.cw-pct .bar{flex:1;height:2px;background:rgba(255,255,255,.15);border-radius:1px;overflow:hidden}
+.cw-pct .bar-fill{height:100%;background:var(--accent)}
+
+/* ===== ANIME GRID ===== */
+.anime-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:16px}
+.anime-card{cursor:pointer;border-radius:10px;overflow:hidden;background:var(--bg-card);border:1px solid transparent;transition:all .25s}
+.anime-card:hover{border-color:var(--accent);transform:translateY(-4px);box-shadow:0 8px 30px rgba(200,16,46,.28)}
+.anime-poster{position:relative;padding-bottom:145%;overflow:hidden}
+.anime-poster img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;transition:transform .3s}
+.anime-card:hover .anime-poster img{transform:scale(1.07)}
+.anime-poster .play-btn{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,.45);opacity:0;transition:opacity .2s}
+.anime-card:hover .play-btn{opacity:1}
+.play-btn i{font-size:32px;color:#fff}
+.badge-year{position:absolute;top:8px;left:8px;padding:3px 7px;border-radius:4px;background:rgba(0,0,0,.7);font-size:10px;font-weight:600;color:#fff;backdrop-filter:blur(4px)}
+.badge-eps{position:absolute;bottom:8px;right:8px;padding:3px 7px;border-radius:4px;background:rgba(0,0,0,.7);font-size:10px;color:#fff;display:flex;align-items:center;gap:4px}
+.badge-sub{position:absolute;top:8px;right:8px;padding:3px 8px;border-radius:4px;background:rgba(200,16,46,.85);font-size:10px;font-weight:700;color:#fff}
+.anime-info{padding:10px}
+.anime-title{font-size:12px;font-weight:500;color:var(--text-main);display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;line-height:1.35}
+.anime-meta{margin-top:5px;font-size:11px;color:var(--text-muted);display:flex;align-items:center;gap:6px}
+.anime-meta .rating{color:#fbbf24;display:flex;align-items:center;gap:3px}
+.anime-meta .type{color:var(--text-secondary)}
+
+/* ===== SIDEBAR ===== */
+.sidebar-section{margin-bottom:24px}
+.sidebar-title{font-size:14px;font-weight:600;color:#fff;margin-bottom:12px;display:flex;align-items:center;gap:6px}
+.sidebar-title i{color:var(--accent)}
+
+/* TOP AIRING */
+.top-airing-list{display:flex;flex-direction:column;gap:0}
+.tai-item{display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid rgba(255,255,255,.05);cursor:pointer;transition:background .15s}
+.tai-item:last-child{border-bottom:none}
+.tai-item:hover{background:rgba(255,255,255,.03);margin:0 -8px;padding-left:8px;padding-right:8px;border-radius:8px}
+.tai-num{width:20px;font-size:13px;font-weight:700;color:var(--text-muted);flex:0 0 auto;text-align:center}
+.tai-item.top3 .tai-num{color:var(--accent)}
+.tai-thumb{width:40px;height:54px;border-radius:6px;overflow:hidden;flex:0 0 auto;background:var(--bg-card)}
+.tai-thumb img{width:100%;height:100%;object-fit:cover}
+.tai-info{flex:1;min-width:0}
+.tai-title{font-size:12px;font-weight:500;color:var(--text-main);display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;line-height:1.35}
+.tai-ep{font-size:11px;color:var(--text-muted);margin-top:3px}
+.tai-badge{padding:2px 6px;border-radius:3px;background:rgba(200,16,46,.2);font-size:9px;font-weight:700;color:var(--accent);border:1px solid rgba(200,16,46,.3)}
+.tai-actions{display:flex;justify-content:center;margin-top:12px}
+.btn-schedule{width:100%;padding:10px;border-radius:8px;background:rgba(200,16,46,.1);border:1px solid rgba(200,16,46,.25);color:var(--accent);font-size:12px;font-weight:600;cursor:pointer;transition:all .2s}
+.btn-schedule:hover{background:rgba(200,16,46,.2)}
+
+/* GENRES */
+.genre-grid{display:flex;flex-wrap:wrap;gap:6px}
+.genre-tag{padding:5px 12px;border-radius:6px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);color:var(--text-secondary);font-size:12px;cursor:pointer;transition:all .2s}
+.genre-tag:hover{background:rgba(200,16,46,.15);border-color:var(--accent);color:#fff}
+.btn-all-genres{width:100%;margin-top:10px;padding:9px;border-radius:8px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);color:var(--text-secondary);font-size:12px;font-weight:500;cursor:pointer;transition:all .2s}
+.btn-all-genres:hover{background:rgba(200,16,46,.1);border-color:var(--accent);color:var(--accent)}
+
+/* QUICK LINKS */
+.quick-links-list{display:flex;flex-direction:column;gap:2px}
+.ql-item{display:flex;align-items:center;gap:10px;padding:9px 10px;border-radius:8px;font-size:13px;color:var(--text-secondary);cursor:pointer;transition:all .2s}
+.ql-item:hover{background:rgba(255,255,255,.06);color:#fff}
+.ql-item i{font-size:14px;color:var(--text-muted);width:16px;text-align:center}
+
+/* WAIFU CARD */
+.waifu-card{border-radius:14px;overflow:hidden;background:linear-gradient(160deg,#1a0510,#0d0510);border:1px solid rgba(200,16,46,.25);position:relative;text-align:center;padding:20px 16px}
+.waifu-card::before{content:'';position:absolute;inset:0;background:radial-gradient(circle at 50% 100%,rgba(200,16,46,.2),transparent 70%)}
+.waifu-title{font-size:11px;color:var(--text-muted);margin-bottom:4px;position:relative;z-index:1}
+.waifu-name{font-family:'Cinzel',serif;font-size:22px;font-weight:700;color:#fff;text-shadow:0 0 20px rgba(200,16,46,.6);position:relative;z-index:1}
+.waifu-subname{font-size:11px;color:var(--text-secondary);letter-spacing:3px;margin-top:4px;position:relative;z-index:1}
+.waifu-img{width:100%;max-height:200px;object-fit:contain;object-position:bottom;position:relative;z-index:1;margin-top:-10px}
+.hearts{display:flex;justify-content:center;gap:8px;margin-top:8px;position:relative;z-index:1}
+.hearts i{color:var(--accent);animation:heartbeat 1.5s infinite;font-size:16px}
+.hearts i:nth-child(2){animation-delay:.3s}
+.hearts i:nth-child(3){animation-delay:.6s}
+@keyframes heartbeat{0%,100%{transform:scale(1)}50%{transform:scale(1.25)}}
+
+/* ===== FOOTER ===== */
+#footer{background:var(--bg-secondary);border-top:1px solid rgba(255,255,255,.06);margin-left:72px;padding:50px 40px 30px}
+.footer-inner{max-width:1200px;margin:0 auto}
+.footer-top{display:flex;align-items:flex-start;gap:40px;margin-bottom:40px}
+.footer-brand .logo{font-family:'Cinzel',serif;font-size:28px;font-weight:700;background:linear-gradient(135deg,#fff 30%,var(--accent));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.footer-brand .tagline{font-size:12px;color:var(--text-muted);margin-top:4px;max-width:220px;line-height:1.5}
+.footer-social{display:flex;gap:10px;margin-top:16px}
+.social-btn{width:36px;height:36px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:16px;cursor:pointer;transition:all .2s;border:none}
+.social-btn.dc{background:#5865f2;color:#fff}
+.social-btn.tg{background:#229ed9;color:#fff}
+.social-btn.rd{background:#ff4500;color:#fff}
+.social-btn.tw{background:#1da1f2;color:#fff}
+.social-btn:hover{transform:translateY(-2px);filter:brightness(1.15)}
+.footer-cols{display:grid;grid-template-columns:repeat(4,1fr);gap:30px;flex:1}
+.footer-col h4{font-size:13px;font-weight:600;color:#fff;margin-bottom:14px}
+.footer-col a{display:block;font-size:12px;color:var(--text-muted);margin-bottom:8px;transition:color .2s}
+.footer-col a:hover{color:var(--accent)}
+.footer-az{margin:30px 0;padding:24px 0;border-top:1px solid rgba(255,255,255,.06);border-bottom:1px solid rgba(255,255,255,.06)}
+.footer-az-label{font-size:11px;font-weight:600;color:var(--text-muted);margin-bottom:10px;letter-spacing:1px}
+.az-list{display:flex;flex-wrap:wrap;gap:4px}
+.az-list a{padding:5px 10px;border-radius:5px;background:rgba(255,255,255,.04);font-size:12px;color:var(--text-muted);transition:all .2s}
+.az-list a:hover{background:rgba(200,16,46,.15);color:var(--accent)}
+.footer-bottom{display:flex;align-items:center;justify-content:space-between;margin-top:24px;font-size:12px;color:var(--text-muted)}
+.footer-links{display:flex;gap:20px}
+.footer-links a{color:var(--text-muted);font-size:12px}
+.footer-links a:hover{color:var(--accent)}
+
+/* ===== RESPONSIVE ===== */
+@media(max-width:1200px){
+  #sidebar{display:none}
+}
+@media(max-width:991px){
+  #leftnav{display:none}
+  #main-wrap{margin-left:0}
+  #footer{margin-left:0}
+  .header-nav{display:none}
+}
+@media(max-width:768px){
+  .hero-slider{height:300px}
+  .hero-content{padding:24px}
+  .hero-logo{font-size:28px}
+  .quick-nav-inner{grid-template-columns:repeat(2,1fr)}
+  .footer-cols{grid-template-columns:repeat(2,1fr)}
+}
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<div id="header">
+  <div class="header-inner">
+    <a href="#" class="brand">❤Anikami<sub>アニカミ</sub></a>
+    <div class="search-wrap">
+      <input type="text" placeholder="Search anime...">
+      <button><i class="fas fa-search"></i></button>
+    </div>
+    <nav class="header-nav">
+      <a href="#" class="active">Home</a>
+      <a href="#"><i class="fas fa-bolt" style="font-size:10px"></i></a>
+      <a href="#">Popular</a>
+      <a href="#">New Season</a>
+      <a href="#">Movies</a>
+      <a href="#">Random</a>
+    </nav>
+    <div class="header-actions">
+      <button class="btn-discord"><i class="fab fa-discord"></i> Discord</button>
+      <button class="btn-telegram"><i class="fab fa-telegram"></i> Telegram</button>
+      <button class="icon-btn"><i class="fas fa-heart"></i></button>
+      <button class="icon-btn"><i class="fas fa-heart" style="color:var(--accent)"></i></button>
+      <button class="btn-login">Login</button>
+    </div>
+  </div>
+</div>
+
+<!-- LEFT SIDEBAR NAV -->
+<nav id="leftnav">
+  <a class="lnav-item active" href="#"><i class="fas fa-home"></i>Home</a>
+  <a class="lnav-item" href="#"><i class="fas fa-tv"></i>Anime</a>
+  <a class="lnav-item" href="#"><i class="fas fa-fire"></i>Popular</a>
+  <a class="lnav-item" href="#"><i class="fas fa-random"></i>Random</a>
+  <a class="lnav-item" href="#"><i class="fas fa-calendar-alt"></i>Schedule</a>
+  <a class="lnav-item" href="#"><i class="fas fa-tags"></i>Genres</a>
+  <a class="lnav-item" href="#"><i class="fas fa-film"></i>Movies</a>
+</nav>
+
+<!-- MAIN -->
+<div id="main-wrap">
+  <div id="content">
+
+    <!-- HERO -->
+    <div class="hero-slider">
+      <div class="hero-slide">
+        <div class="hero-bg" style="background-image:url('https://picsum.photos/seed/dxd2/1400/400')"></div>
+        <div class="hero-overlay"></div>
+        <!-- Placeholder character art using colored gradient -->
+        <div style="position:absolute;right:0;bottom:0;width:500px;height:100%;z-index:1;background:linear-gradient(135deg,transparent 10%,rgba(140,10,30,.15) 100%);overflow:hidden">
+          <div style="position:absolute;right:-20px;bottom:0;width:440px;height:420px;background:radial-gradient(ellipse at center bottom,rgba(200,16,46,.15) 0%,transparent 70%);border-radius:50% 50% 0 0"></div>
+          <div style="position:absolute;right:20px;bottom:0;font-size:200px;filter:drop-shadow(-10px 0 40px rgba(200,16,46,.5));opacity:.4">❤</div>
+        </div>
+        <div class="hero-content">
+          <div class="hero-logo">High School <span style="color:var(--accent)">D×D</span></div>
+          <div class="hero-tags">
+            <span class="hero-tag">TV Series</span>
+            <span class="hero-tag red">2012</span>
+            <span class="hero-tag blue">HD</span>
+            <span class="hero-tag">SUB</span>
+          </div>
+          <p class="hero-desc">The story follows Issei Hyoudou, a perverted high school boy who is killed on his first date, only to be resurrected by the beautiful Rias Gremory as her devil and loyal servant.</p>
+          <div class="hero-actions">
+            <button class="btn-watch"><i class="fas fa-play"></i> Watch Now</button>
+            <button class="btn-info"><i class="fas fa-info-circle"></i> More Info</button>
+          </div>
+        </div>
+      </div>
+      <div class="hero-arrow left"><i class="fas fa-angle-left"></i></div>
+      <div class="hero-arrow right"><i class="fas fa-angle-right"></i></div>
+      <div class="hero-dots">
+        <div class="hero-dot active"></div>
+        <div class="hero-dot"></div>
+        <div class="hero-dot"></div>
+        <div class="hero-dot"></div>
+        <div class="hero-dot"></div>
+      </div>
+    </div>
+
+    <!-- QUICK NAV STRIP -->
+    <div class="quick-nav">
+      <div class="quick-nav-inner">
+        <div class="qn-item">
+          <div class="qn-icon orange"><i class="fas fa-list-ul"></i></div>
+          <div><div class="qn-title">Anime List</div><div class="qn-sub">Browse all anime</div></div>
+        </div>
+        <div class="qn-item">
+          <div class="qn-icon blue"><i class="fas fa-star"></i></div>
+          <div><div class="qn-title">Popular Anime</div><div class="qn-sub">Top anime today</div></div>
+        </div>
+        <div class="qn-item">
+          <div class="qn-icon green"><i class="fas fa-random"></i></div>
+          <div><div class="qn-title">Random Anime</div><div class="qn-sub">Surprise me!</div></div>
+        </div>
+        <div class="qn-item">
+          <div class="qn-icon pink"><i class="fas fa-rocket"></i></div>
+          <div><div class="qn-title">New Season</div><div class="qn-sub">Latest releases</div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- COMMUNITY BANNER -->
+    <div class="community-banner">
+      <div class="cb-text">
+        <div class="cb-title">Join our community!</div>
+        <div class="cb-sub">Chat, share and stay updated with anime releases &amp; news</div>
+      </div>
+      <div class="cb-actions">
+        <button class="cb-btn discord"><i class="fab fa-discord"></i> Discord</button>
+        <button class="cb-btn telegram"><i class="fab fa-telegram"></i> Telegram</button>
+        <button class="cb-btn reddit"><i class="fab fa-reddit-alien"></i> Reddit</button>
+      </div>
+    </div>
+
+    <!-- TRENDING NOW -->
+    <div class="section">
+      <div class="section-head">
+        <div class="section-title"><i class="fas fa-fire"></i> Trending Now</div>
+        <div style="display:flex;align-items:center;gap:10px">
+          <div class="section-nav">
+            <button class="snav-btn"><i class="fas fa-angle-left"></i></button>
+            <button class="snav-btn"><i class="fas fa-angle-right"></i></button>
+          </div>
+        </div>
+      </div>
+      <div class="trending-wrap">
+        <div class="trending-row" id="trending-row">
+          <!-- Cards generated by JS -->
+        </div>
+      </div>
+    </div>
+
+    <!-- CONTINUE WATCHING -->
+    <div class="section">
+      <div class="section-head">
+        <div class="section-title"><span style="color:#ef4444">▶</span> Continue Watching</div>
+        <a href="#" class="view-all">View All <i class="fas fa-angle-right"></i></a>
+      </div>
+      <div class="cw-grid" id="cw-grid"></div>
+    </div>
+
+    <!-- RECENTLY ADDED -->
+    <div class="section">
+      <div class="section-head">
+        <div class="section-title"><i class="fas fa-bolt" style="color:#f59e0b"></i> Recently Added</div>
+        <a href="#" class="view-all">View All <i class="fas fa-angle-right"></i></a>
+      </div>
+      <div class="anime-grid" id="recent-grid"></div>
+    </div>
+
+    <!-- NEW SEASON -->
+    <div class="section">
+      <div class="section-head">
+        <div class="section-title"><i class="fas fa-star" style="color:#fbbf24"></i> New Season</div>
+        <a href="#" class="view-all">View All <i class="fas fa-angle-right"></i></a>
+      </div>
+      <div class="anime-grid" id="newseason-grid"></div>
+    </div>
+
+    <!-- POPULAR ANIME -->
+    <div class="section">
+      <div class="section-head">
+        <div class="section-title"><i class="fas fa-crown" style="color:#f59e0b"></i> Popular Anime</div>
+        <a href="#" class="view-all">View All <i class="fas fa-angle-right"></i></a>
+      </div>
+      <div class="anime-grid" id="popular-grid"></div>
+    </div>
+
+  </div>
+
+  <!-- RIGHT SIDEBAR -->
+  <div id="sidebar">
+    <!-- TOP AIRING -->
+    <div class="sidebar-section">
+      <div class="sidebar-title"><i class="fas fa-bolt"></i> Top Airing</div>
+      <div class="top-airing-list" id="top-airing-list"></div>
+      <div class="tai-actions">
+        <button class="btn-schedule">View Full Schedule</button>
+      </div>
+    </div>
+
+    <!-- GENRES -->
+    <div class="sidebar-section">
+      <div class="sidebar-title"><i class="fas fa-tags"></i> Genres</div>
+      <div class="genre-grid">
+        <span class="genre-tag">Action</span><span class="genre-tag">Adventure</span>
+        <span class="genre-tag">Comedy</span><span class="genre-tag">Drama</span>
+        <span class="genre-tag">Ecchi</span><span class="genre-tag">Fantasy</span>
+        <span class="genre-tag">Magic</span><span class="genre-tag">Mecha</span>
+        <span class="genre-tag">Music</span><span class="genre-tag">Mystery</span>
+        <span class="genre-tag">School</span><span class="genre-tag">Sci-Fi</span>
+        <span class="genre-tag">Seinen</span><span class="genre-tag">Shoujo</span>
+        <span class="genre-tag">Shoujo Ai</span><span class="genre-tag">Shounen</span>
+        <span class="genre-tag">Slice of Life</span><span class="genre-tag">Sports</span>
+        <span class="genre-tag">Supernatural</span><span class="genre-tag">Thriller</span>
+      </div>
+      <button class="btn-all-genres">View All Genres</button>
+    </div>
+
+    <!-- QUICK LINKS -->
+    <div class="sidebar-section">
+      <div class="sidebar-title"><i class="fas fa-link"></i> Quick Links</div>
+      <div class="quick-links-list">
+        <div class="ql-item"><i class="fas fa-list"></i> Anime List</div>
+        <div class="ql-item"><i class="fas fa-star"></i> Popular Anime</div>
+        <div class="ql-item"><i class="fas fa-rocket"></i> New Season</div>
+        <div class="ql-item"><i class="fas fa-random"></i> Random Anime</div>
+        <div class="ql-item"><i class="fas fa-film"></i> Anime Movies</div>
+        <div class="ql-item"><i class="fas fa-calendar"></i> Schedule</div>
+      </div>
+    </div>
+
+    <!-- WAIFU CARD -->
+    <div class="waifu-card">
+      <div class="waifu-title">Worship Your Waifu ❤️</div>
+      <div class="waifu-name">Rias Gremory</div>
+      <div class="waifu-subname">リアス・グレモリー</div>
+      <div class="hearts"><i class="fas fa-heart"></i><i class="fas fa-heart"></i><i class="fas fa-heart"></i></div>
+      <div style="font-size:80px;text-align:center;filter:drop-shadow(0 0 30px rgba(200,16,46,.5));margin-top:10px"><img src="/rias-sidebar-chibi.png"></div>
+    </div>
+  </div>
+</div>
+
+<!-- FOOTER -->
+<div id="footer">
+  <div class="footer-inner">
+    <div class="footer-top">
+      <div class="footer-brand">
+        <div class="logo">❤Anikami</div>
+        <div class="tagline">Watch anime online in high quality. No ads, fast streaming, and daily anime updates!</div>
+        <div class="footer-social">
+          <button class="social-btn dc"><i class="fab fa-discord"></i></button>
+          <button class="social-btn tg"><i class="fab fa-telegram"></i></button>
+          <button class="social-btn rd"><i class="fab fa-reddit-alien"></i></button>
+          <button class="social-btn tw"><i class="fab fa-twitter"></i></button>
+        </div>
+      </div>
+      <div class="footer-cols">
+        <div class="footer-col">
+          <h4>Browse</h4>
+          <a href="#">Anime List</a>
+          <a href="#">New Season</a>
+          <a href="#">Popular Anime</a>
+          <a href="#">Random Anime</a>
+          <a href="#">Anime Movies</a>
+        </div>
+        <div class="footer-col">
+          <h4>Info</h4>
+          <a href="#">About Us</a>
+          <a href="#">Contact</a>
+          <a href="#">Privacy Policy</a>
+          <a href="#">Terms of Service</a>
+          <a href="#">DMCA</a>
+        </div>
+        <div class="footer-col">
+          <h4>Support</h4>
+          <a href="#">FAQ</a>
+          <a href="#">Report Error</a>
+          <a href="#">Request Anime</a>
+          <a href="#">Donations</a>
+        </div>
+      </div>
+    </div>
+    <div class="footer-az">
+      <div class="footer-az-label">A-Z LIST — Searching anime order by alphabet name A to Z.</div>
+      <div class="az-list">
+        <a href="#">All</a>
+        <a href="#">A</a><a href="#">B</a><a href="#">C</a><a href="#">D</a>
+        <a href="#">E</a><a href="#">F</a><a href="#">G</a><a href="#">H</a>
+        <a href="#">I</a><a href="#">J</a><a href="#">K</a><a href="#">L</a>
+        <a href="#">M</a><a href="#">N</a><a href="#">O</a><a href="#">P</a>
+        <a href="#">Q</a><a href="#">R</a><a href="#">S</a><a href="#">T</a>
+        <a href="#">U</a><a href="#">V</a><a href="#">W</a><a href="#">X</a>
+        <a href="#">Y</a><a href="#">Z</a>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span>Anikami does not store any files on our server, we only share links to media hosted on 3rd party services.</span>
+      <span>Copyright © 2024 Anikami. All Rights Reserved</span>
+    </div>
+  </div>
+</div>
+
+<script>
+// ── DATA ────────────────────────────────────────────────────────────────
+const SEEDS = ['onep','naruto','fma','death','stein','sao','bleach','jjk','demon','chainsaw','solo','boruto','attack','mob','fairy','black','hunter','violet','made','spy'];
+const SEEDS2= ['wind','kaiju','irreg','kono','tensei','tokyo','mushoku','eminence','re0','date','spice','unnamed','spring','summer','winter','fall','index','railgun','overlord','sword'];
+
+const animeData = [
+  {title:'Solo Leveling',year:2024,rating:9.3,type:'TV Series',sub:true},
+  {title:'Jujutsu Kaisen S2',year:2023,rating:9.1,type:'TV Series',sub:true},
+  {title:'Demon Slayer S4',year:2024,rating:9.0,type:'TV Series',sub:true},
+  {title:'Attack on Titan',year:2023,rating:9.0,type:'TV Series',sub:true},
+  {title:'Chainsaw Man',year:2022,rating:9.8,type:'TV Series',sub:true},
+  {title:'Oshi no Ko',year:2023,rating:8.7,type:'TV Series',sub:true},
+  {title:'Wind Breaker',year:2024,rating:8.8,type:'TV Series',sub:true},
+  {title:'Kaiju No. 8',year:2024,rating:8.9,type:'TV Series',sub:true},
+  {title:'The Irregular at Magic',year:2024,rating:8.5,type:'TV Series',sub:true},
+  {title:'Konosuba S3',year:2024,rating:8.6,type:'TV Series',sub:true},
+  {title:'Tensei Slime S3',year:2024,rating:8.4,type:'TV Series',sub:true},
+  {title:'The Eminence in Shadow S2',year:2023,rating:8.7,type:'TV Series',sub:true},
+];
+
+const topAiring = [
+  {title:'My Hero Academia S7',ep:'Episode 12',sub:true},
+  {title:'Black Clover',ep:'Episode 170',sub:true},
+  {title:'One Piece',ep:'Episode 1087',sub:true},
+  {title:'Jujutsu Kaisen S2',ep:'Episode 23',sub:true},
+  {title:'Demon Slayer S4',ep:'Episode 5',sub:true},
+  {title:'Kaiju No. 8',ep:'Episode 7',sub:true},
+  {title:'Wind Breaker',ep:'Episode 7',sub:true},
+  {title:'The Irregular at Magic',ep:'Episode 7',sub:true},
+  {title:'Tensei Slime S3',ep:'Episode 8',sub:true},
+  {title:'Konosuba S3',ep:'Episode 6',sub:true},
+];
+
+const cwData = [
+  {title:'One Piece',ep:'Episode 1087',pct:70},
+  {title:'Boruto: Naruto Next',ep:'Episode 293',pct:33},
+  {title:'Bleach: TYBW',ep:'Episode ?',pct:5},
+  {title:'Mushoku Tensei S2',ep:'Episode 8',pct:73},
+  {title:'Tokyo Revengers S3',ep:'Episode ?',pct:20},
+];
+
+// ── RENDER TRENDING ──────────────────────────────────────────────────
+function renderTrending(){
+  const row = document.getElementById('trending-row');
+  animeData.forEach((a,i)=>{
+    const imgUrl = `https://picsum.photos/seed/${SEEDS[i]||i}/140/200`;
+    const isTop3 = i < 3;
+    row.innerHTML += `
+      <div class="trending-card">
+        <div class="poster">
+          <div class="trending-num ${isTop3?'top3':''}">${i+1}</div>
+          <img src="${imgUrl}" alt="${a.title}" loading="lazy">
+        </div>
+        <div class="trending-title">${a.title}</div>
+        <div class="trending-meta"><i class="fas fa-star"></i>${a.rating} • ${a.type}</div>
+      </div>`;
+  });
+}
+
+// ── RENDER CONTINUE WATCHING ─────────────────────────────────────────
+function renderCW(){
+  const grid = document.getElementById('cw-grid');
+  cwData.forEach((c,i)=>{
+    const imgUrl = `https://picsum.photos/seed/cw${SEEDS[i]}/170/100`;
+    grid.innerHTML += `
+      <div class="cw-card">
+        <div class="cw-thumb">
+          <img src="${imgUrl}" alt="${c.title}" loading="lazy">
+          <div class="play-overlay"><i class="fas fa-play"></i></div>
+          <div class="cw-progress"><div class="cw-progress-fill" style="width:${c.pct}%"></div></div>
+        </div>
+        <div class="cw-info">
+          <div class="cw-title">${c.title}</div>
+          <div class="cw-ep">${c.ep}</div>
+          <div class="cw-pct"><span class="bar"><span class="bar-fill" style="width:${c.pct}%"></span></span>${c.pct}%</div>
+        </div>
+      </div>`;
+  });
+}
+
+// ── RENDER ANIME GRID ────────────────────────────────────────────────
+function renderAnimeGrid(id, items, seedArr){
+  const grid = document.getElementById(id);
+  items.forEach((a,i)=>{
+    const imgUrl = `https://picsum.photos/seed/${seedArr[i]||'a'+i}/160/230`;
+    grid.innerHTML += `
+      <div class="anime-card">
+        <div class="anime-poster">
+          <img src="${imgUrl}" alt="${a.title}" loading="lazy">
+          <div class="play-btn"><i class="fas fa-play"></i></div>
+          <span class="badge-year">${a.year}</span>
+          ${a.sub ? '<span class="badge-sub">SUB</span>' : ''}
+        </div>
+        <div class="anime-info">
+          <div class="anime-title">${a.title}</div>
+          <div class="anime-meta">
+            <span class="rating"><i class="fas fa-star"></i>${a.rating}</span>
+            <span>•</span>
+            <span class="type">${a.type}</span>
+          </div>
+        </div>
+      </div>`;
+  });
+}
+
+// ── RENDER TOP AIRING ────────────────────────────────────────────────
+function renderTopAiring(){
+  const list = document.getElementById('top-airing-list');
+  topAiring.forEach((a,i)=>{
+    const imgUrl = `https://picsum.photos/seed/ta${SEEDS[i]}/40/54`;
+    const isTop3 = i < 3;
+    list.innerHTML += `
+      <div class="tai-item ${isTop3?'top3':''}">
+        <div class="tai-num">${i+1}</div>
+        <div class="tai-thumb"><img src="${imgUrl}" alt="${a.title}" loading="lazy"></div>
+        <div class="tai-info">
+          <div class="tai-title">${a.title}</div>
+          <div class="tai-ep">${a.ep}</div>
+        </div>
+        ${a.sub ? '<span class="tai-badge">SUB</span>' : ''}
+      </div>`;
+  });
+}
+
+// ── INIT ─────────────────────────────────────────────────────────────
+renderTrending();
+renderCW();
+renderAnimeGrid('recent-grid', animeData.slice(0,6), SEEDS.slice(0,6));
+renderAnimeGrid('newseason-grid', animeData.slice(0,5), SEEDS2.slice(0,5));
+renderAnimeGrid('popular-grid', animeData, SEEDS.slice(0,12));
+renderTopAiring();
+
+// Hero dots interaction
+document.querySelectorAll('.hero-dot').forEach((dot,i)=>{
+  dot.addEventListener('click',()=>{
+    document.querySelectorAll('.hero-dot').forEach(d=>d.classList.remove('active'));
+    dot.classList.add('active');
+  });
+});
+
+// Drag scroll on trending
+const tw = document.querySelector('.trending-wrap');
+let isDown=false,startX,scrollLeft;
+tw.addEventListener('mousedown',e=>{isDown=true;startX=e.pageX-tw.offsetLeft;scrollLeft=tw.scrollLeft});
+tw.addEventListener('mouseleave',()=>isDown=false);
+tw.addEventListener('mouseup',()=>isDown=false);
+tw.addEventListener('mousemove',e=>{if(!isDown)return;e.preventDefault();const x=e.pageX-tw.offsetLeft;tw.scrollLeft=scrollLeft-(x-startX)*1.5});
+</script>
+</body>
+</html>

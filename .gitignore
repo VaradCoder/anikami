@@ -1,0 +1,22 @@
+# ── Secrets & runtime data — NEVER commit these ────────────────
+data/app.sqlite
+claude-Audit.md
+tmp_home_payload.json
+
+# ── Cache (regenerated at runtime) ──────────────────────────────
+cache/*.cache.json
+
+# ── Archives / build artifacts ──────────────────────────────────
+files.zip
+
+# ── Node / vendor dependencies ───────────────────────────────────
+node_modules/
+vendor/
+
+# ── OS / editor cruft ────────────────────────────────────────────
+.DS_Store
+Thumbs.db
+*.log
+*.swp
+.vscode/
+.idea/

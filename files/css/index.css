@@ -1,0 +1,75 @@
+/* index.php specific styles */
+
+/* Layout */
+#xmain-wrapper{
+  padding-top: 0;
+}
+
+.mwb-2col{
+  display: flex;
+  gap: 30px;
+  align-items: flex-start;
+}
+
+.mwb-left{
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.mwb-right{
+  width: 430px;
+  flex: 0 0 auto;
+}
+
+/* Hero/Search spacing */
+.home-search{ margin: 20px 0 10px; }
+
+/* Headings */
+.mw-heading{
+  font-size: 34px;
+  font-weight: 600;
+  line-height: 1.15;
+  margin: 0 0 16px;
+  color: var(--text-main, #fff);
+}
+
+/* Right column card */
+.zr-news.zr-news-list{ background: transparent; }
+
+.heading-news{
+  margin: 0 0 18px;
+  color: var(--accent-primary);
+  font-weight: 600;
+  font-size: 22px;
+}
+
+/* Popular anime items */
+.zr-news.zr-news-list .item{
+  border-bottom: 1px solid rgba(255,255,255,.08);
+  padding-bottom: 18px;
+  margin-bottom: 18px;
+}
+
+.zr-news.zr-news-list .item:last-of-type{
+  border-bottom: 0;
+  margin-bottom: 0;
+  padding-bottom: 0;
+}
+
+/* Images */
+.zr-news-thumb,
+.zrn-image{
+  border-radius: 14px;
+}
+
+/* Responsiveness */
+@media (max-width: 991px){
+  .mwb-2col{ flex-direction: column; }
+  .mwb-right{ width: 100%; }
+  .mw-heading{ font-size: 28px; }
+}
+
+@media (max-width: 576px){
+  .mw-heading{ font-size: 24px; }
+}
+

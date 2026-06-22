@@ -1,0 +1,343 @@
+/* Minified utilities with Rias Red theme */
+
+
+/* =========================
+   Global smooth UI polish
+   (NO layout changes)
+   ========================= */
+html, body {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+/* reduce jank on hover/click without affecting layout */
+a, button, .btn, .film-poster-ahref, .flw-item, .cbox, .anif-block, .dropdown-menu-model, #sidebar_menu {
+  transition: background-color 180ms ease, color 180ms ease, box-shadow 180ms ease, transform 180ms ease, opacity 180ms ease;
+}
+
+/* Home page (hkx) polish */
+.hkx-hero-wrap,
+.hkx-home-panels,
+.hkx-continue-card,
+.hkx-panel,
+.hkx-list-item,
+.hkx-share-strip,
+.hkx-search-panel {
+  border-radius: 14px;
+}
+
+.hkx-continue-card,
+.hkx-list-item,
+.hkx-panel {
+  box-shadow: none;
+}
+
+/* subtle hover lift */
+.hkx-continue-card:hover,
+.hkx-list-item:hover,
+.hkx-panel:hover {
+  box-shadow: 0 14px 40px rgba(0, 0, 0, .28);
+}
+
+/* soften image edges */
+.hkx-continue-card img,
+.hkx-list-item img {
+  border-radius: 12px;
+  transition: transform 220ms ease, filter 220ms ease;
+}
+
+.hkx-continue-card:hover img,
+.hkx-list-item:hover img {
+  transform: scale(1.03);
+  filter: saturate(1.08);
+}
+
+
+/* improve readability spacing a bit */
+body {
+  line-height: 1.45;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  line-height: 1.2;
+  letter-spacing: 0;
+}
+
+/* =========================
+   End global smooth UI polish
+   ========================= */
+
+.twitter_bt {
+  color: #fff;
+  background: var(--accent-primary);
+  padding: 7px;
+  border-radius: 3px;
+  margin: 14px;
+  transition: all .3s;
+}
+
+.twitter_bt:hover {
+  background: var(--accent-hover);
+}
+
+.twitter_bt i.fa-twitter {
+  transition: all .3s;
+  font-size: 30px;
+  margin-left: 12px;
+  width: 100%;
+  overflow: hidden;
+}
+
+.twitter_bt i.fa-twitter:hover {
+  color: var(--accent-glow);
+}
+
+#tora_d {
+  transform: rotate(-90deg);
+  margin-top: -26px;
+  margin-right: 24px;
+}
+
+@media (min-width: 1200px) {
+  .col-xl-3 {
+    flex: 0 0 25%;
+    max-width: 25%;
+  }
+}
+
+.col-xl-3 {
+  margin-top: 2px;
+}
+
+img {
+  transition: all .3s;
+}
+
+#action-button {
+  z-index: 0 !important;
+}
+
+/* Scrollbar theme */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--accent-primary);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--bg-card);
+}
+
+/* Header parity override (loaded after style.css) */
+#header.hkx-home-topbar {
+  position: fixed !important;
+  top: 0 !important;
+  left: 0 !important;
+  right: 0 !important;
+  z-index: 103 !important;
+  height: auto !important;
+  min-height: 76px !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  border-bottom: 1px solid var(--border-soft) !important;
+  background: linear-gradient(180deg, rgba(12, 12, 20, .95), rgba(12, 12, 20, .7)) !important;
+}
+
+#header.hkx-home-topbar .container.hkx-topbar-row {
+  display: flex !important;
+  align-items: center !important;
+  gap: 14px !important;
+  padding: 12px 15px !important;
+  flex-wrap: nowrap !important;
+}
+
+#header.hkx-home-topbar #mobile_menu.hkx-menu-btn {
+  position: relative !important;
+  top: auto !important;
+  left: auto !important;
+  width: 44px !important;
+  height: 44px !important;
+  min-width: 44px !important;
+  border: 0 !important;
+  border-radius: 10px !important;
+  margin: 0 !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  background: var(--bg-card) !important;
+  color: var(--text-main) !important;
+}
+
+#header.hkx-home-topbar .hkx-brand {
+  display: inline-flex !important;
+  align-items: center !important;
+  margin: 0 !important;
+  float: none !important;
+  color: var(--text-main) !important;
+  font-size: 2.15rem !important;
+  font-weight: 700 !important;
+  line-height: 1 !important;
+  text-decoration: none !important;
+}
+
+#header.hkx-home-topbar .hkx-search-wrap {
+  flex: 1 1 auto !important;
+  min-width: 280px !important;
+  margin: 0 !important;
+}
+
+#header.hkx-home-topbar .hkx-search-form {
+  display: flex !important;
+  align-items: center !important;
+  width: 100% !important;
+  border: 1px solid var(--border-soft) !important;
+  border-radius: 12px !important;
+  overflow: hidden !important;
+  background: rgba(255, 255, 255, .97) !important;
+}
+
+#header.hkx-home-topbar .hkx-search-form .search-input {
+  flex: 1 1 auto !important;
+  min-width: 0 !important;
+  height: 46px !important;
+  margin: 0 !important;
+  border: 0 !important;
+  box-shadow: none !important;
+  background: transparent !important;
+  color: #111827 !important;
+  padding: 0 14px !important;
+}
+
+#header.hkx-home-topbar .hkx-search-form .search-input::placeholder {
+  color: #6b7280 !important;
+}
+
+#header.hkx-home-topbar .hkx-search-form button {
+  border: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+}
+
+#header.hkx-home-topbar .hkx-filter-btn {
+  margin: 0 6px 0 0 !important;
+  border-radius: 8px !important;
+  padding: 8px 14px !important;
+  background: #0f0f16 !important;
+  color: #fff !important;
+  font-weight: 600 !important;
+}
+
+#header.hkx-home-topbar .hkx-quick-links {
+  margin-left: auto !important;
+  display: flex !important;
+  align-items: center !important;
+  gap: 10px !important;
+  flex-wrap: nowrap !important;
+}
+
+#header.hkx-home-topbar .hkx-circle-link {
+  width: 44px !important;
+  height: 44px !important;
+  min-width: 44px !important;
+}
+
+#header.hkx-home-topbar .hkx-plain-link {
+  min-width: 66px !important;
+  text-align: center !important;
+}
+
+#header.hkx-home-topbar .hkx-login-btn {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  min-height: 44px !important;
+  margin: 0 !important;
+  border-radius: 12px !important;
+  text-decoration: none !important;
+}
+
+@media (max-width: 1200px) {
+  #header.hkx-home-topbar .hkx-plain-link {
+    display: none !important;
+  }
+}
+
+@media (max-width: 991px) {
+  #header.hkx-home-topbar .container.hkx-topbar-row {
+    flex-wrap: wrap !important;
+  }
+
+  #header.hkx-home-topbar .hkx-search-wrap {
+    order: 3 !important;
+    width: 100% !important;
+    min-width: 100% !important;
+  }
+
+  #header.hkx-home-topbar .hkx-quick-links {
+    margin-left: 0 !important;
+    width: auto !important;
+  }
+}
+
+@media (max-width: 576px) {
+  #header.hkx-home-topbar .hkx-circle-link {
+    width: 38px !important;
+    height: 38px !important;
+    min-width: 38px !important;
+    font-size: 16px !important;
+  }
+
+  #header.hkx-home-topbar .hkx-login-btn {
+    min-height: 38px !important;
+    padding: 8px 12px !important;
+    font-size: 13px !important;
+  }
+}
+
+/* =========================
+   Mobile Responsiveness Fix
+   ========================= */
+@media (max-width: 991px) {
+  /* allow sidebar to scroll without overlapping header */
+  #sidebar_menu {
+    top: 72px !important;
+    max-height: calc(100vh - 72px) !important;
+  }
+
+  /* make menu overlay use full height */
+  #sidebar_menu_bg {
+    top: 72px !important;
+  }
+
+  /* ensure search doesn’t push header content out */
+  #header.hkx-home-topbar .hkx-search-wrap {
+    min-width: 100% !important;
+  }
+}
+
+@media (max-width: 576px) {
+  #sidebar_menu {
+    top: 64px !important;
+    max-height: calc(100vh - 64px) !important;
+  }
+
+  #sidebar_menu_bg {
+    top: 64px !important;
+  }
+}
+
+/* Fallback: ensure sidebar always sits below fixed topbar */
+#sidebar_menu,
+#sidebar_menu_bg {
+  top: 76px;
+}
+
+

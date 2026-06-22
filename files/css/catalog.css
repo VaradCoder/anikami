@@ -1,0 +1,69 @@
+.catalog-page .catalog-empty {
+    padding: 18px;
+    border-radius: 10px;
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    color: #d4d7dd;
+}
+
+.catalog-page .catalog-empty h3 {
+    margin: 0 0 8px;
+    font-size: 18px;
+    color: #fff;
+}
+
+.catalog-page .catalog-empty p {
+    margin: 0;
+    font-size: 14px;
+}
+
+.catalog-page .pagination nav {
+    width: 100%;
+    overflow-x: auto;
+    overflow-y: hidden;
+    padding-bottom: 6px;
+}
+
+.catalog-page .pagination .az-list {
+    display: flex;
+    flex-wrap: nowrap;
+    gap: 8px;
+    min-width: max-content;
+}
+
+.catalog-page .cus_pagi {
+    margin-top: 7px;
+}
+
+.catalog-page .cus_pagi input {
+    background: #575757;
+    color: #fff;
+    border: 0;
+    width: 56px;
+    text-align: center;
+    border-radius: 2px;
+    height: 28px;
+    outline: 0;
+}
+
+.catalog-page button.btn.btn-xs.btn-primary {
+    padding: 7px 11px;
+    height: 26px;
+    margin-top: 12px;
+    border-radius: 2px;
+}
+
+@media (max-width: 767px) {
+    .catalog-page .film_list-wrap {
+        gap: 12px;
+    }
+
+    .catalog-page .film-detail .film-name {
+        font-size: 15px;
+        line-height: 1.35;
+    }
+
+    .catalog-page .fd-infor {
+        font-size: 12px;
+    }
+}
