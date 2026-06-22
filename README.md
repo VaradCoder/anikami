@@ -1,6 +1,12 @@
-# Anikatsu (Anikami) – Anime Streaming & Discovery Platform
+# Anikami (Anikatsu) – Anime Streaming & Discovery Platform
 
 A PHP-based anime browsing and streaming site: discover trending/seasonal anime, search, read details, and watch episodes through multiple streaming providers, with user accounts, reviews, and comments.
+
+---
+
+## Live Demo
+
+https://anikami.kesug.com/home
 
 ---
 
