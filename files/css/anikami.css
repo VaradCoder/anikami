@@ -517,6 +517,12 @@ button { cursor: pointer; }
 .ak-sidebar-section { margin-bottom: 22px; }
 .ak-sidebar-title { font-size: 13px; font-weight: 600; color: #fff; margin-bottom: 11px; display: flex; align-items: center; gap: 5px; }
 .ak-sidebar-title i { color: var(--accent); }
+.ak-sidebar-title-row { display: flex; align-items: center; justify-content: space-between; margin-bottom: 11px; }
+.ak-sidebar-title-row .ak-sidebar-title { margin-bottom: 0; }
+.ak-topanime-tabs { display: flex; gap: 2px; background: rgba(255,255,255,.04); border-radius: 7px; padding: 2px; }
+.ak-topanime-tab { border: none; background: none; color: var(--text-muted); font-size: 11px; font-weight: 600; padding: 4px 9px; border-radius: 5px; cursor: pointer; transition: all .15s; }
+.ak-topanime-tab:hover { color: #fff; }
+.ak-topanime-tab.active { background: var(--accent); color: #fff; }
 /* Top Airing list */
 .ak-tai-list { display: flex; flex-direction: column; }
 .ak-tai-item {

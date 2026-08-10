@@ -91,6 +91,8 @@ RewriteRule ^popular$ popular.php [QSA,L]
 RewriteRule ^new-season$ new-season.php [QSA,L]
 RewriteRule ^random$ random.php [QSA,L]
 RewriteRule ^schedule$ schedule.php [QSA,L]
+RewriteRule ^community/post/([0-9]+)$ community-post.php?post=$1 [QSA,L]
+RewriteRule ^community$ community.php [QSA,L]
 RewriteRule ^anime$ anime.php [QSA,L]
 
 RewriteRule ^sitemaps/recentCN-sitemap\.xml$ sitemaps/recentCN-sitemap.php [L,QSA,NC]
@@ -117,5 +119,13 @@ RewriteCond %{REQUEST_FILENAME} !-d
 RewriteCond %{REQUEST_FILENAME} !-f
 RewriteRule ^(([A-Za-z0-9\-]+/)*[A-Za-z0-9\-]+)?$ $1.php [L,QSA]
 
+# Catch-all 404 via rewrite, not ErrorDocument's absolute /404.php path —
+# that breaks whenever the site isn't deployed at the domain root (e.g.
+# local dev under http://localhost/anikatsu/, where /404.php resolves
+# outside the app folder entirely). 404.php sets its own
+# http_response_code(404), so the response status is still correct.
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteRule .* 404.php [L]
 
 ErrorDocument 404 /404.php

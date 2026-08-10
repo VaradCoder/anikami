@@ -18,8 +18,23 @@ if ($cached && is_array($cached)) {
         $items[] = legacy_normalize_item($row);
     }
     $lastPage = (int)($resp['pagination']['last_visible_page'] ?? 1);
-    setCache($cacheKey, ['items' => $items, 'lastPage' => $lastPage], 7200);
+
+    // "(Dub)" as a literal title substring is an old MAL/Jikan convention
+    // essentially no current listing uses, so this search returns empty
+    // against real data almost every time — this page was a permanent
+    // dead end. Fall back to popular titles (VidNest's dub server covers
+    // most popular anime) instead of showing nothing.
+    $usedFallback = empty($items);
+    if ($usedFallback) {
+        $fallbackResp = fetchAPI('top/anime?filter=bypopularity&page=' . $page . '&limit=24');
+        foreach (($fallbackResp['data'] ?? []) as $row) {
+            $items[] = legacy_normalize_item($row);
+        }
+        $lastPage = (int)($fallbackResp['pagination']['last_visible_page'] ?? 1);
+    }
+    setCache($cacheKey, ['items' => $items, 'lastPage' => $lastPage, 'usedFallback' => $usedFallback], 7200);
 }
+$usedFallback = $cached['usedFallback'] ?? ($usedFallback ?? false);
 
 $pageTitle    = 'Latest Dubbed Anime — ' . $websiteTitle;
 $pageDesc     = 'Watch the latest dubbed anime online in HD on ' . $websiteTitle . '. Free streaming, no ads.';
@@ -54,6 +69,13 @@ $genreList = [
       <div class="ak-catalog-header">
         <h1 class="ak-catalog-title"><i class="fas fa-microphone"></i> Latest Dubbed Anime</h1>
       </div>
+
+      <?php if ($usedFallback): ?>
+      <div class="ak-catalog-notice" style="padding:10px 14px;margin-bottom:16px;background:var(--bg-secondary);border:1px solid rgba(255,255,255,.07);border-radius:8px;font-size:12.5px;color:var(--text-muted)">
+        <i class="fas fa-circle-info" style="color:var(--accent)"></i>
+        Showing popular titles — dub availability varies per anime and episode. Check the server list on each watch page for a "Dub" option.
+      </div>
+      <?php endif; ?>
 
       <?php if (!empty($items)): ?>
       <div class="ak-anime-grid">

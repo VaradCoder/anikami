@@ -42,7 +42,8 @@ function app_device_os(string $userAgent): string
 
 function app_trending_anime(string $window = 'day', int $limit = 10): array
 {
-    $seconds = $window === 'week' ? 604800 : 86400;
+    $windowSeconds = ['day' => 86400, 'week' => 604800, 'month' => 2592000];
+    $seconds = $windowSeconds[$window] ?? $windowSeconds['day'];
     $since = gmdate('c', time() - $seconds);
     $stmt = app_db()->prepare('SELECT anime_id, COUNT(*) AS score FROM metrics_events WHERE anime_id IS NOT NULL AND created_at >= ? AND event_type IN ("anime_view", "episode_view", "anime_click") GROUP BY anime_id ORDER BY score DESC LIMIT ?');
     $stmt->bindValue(1, $since);

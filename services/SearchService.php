@@ -20,7 +20,13 @@ class SearchService
     /** @return array{results: array, lastPage: int, total: int} */
     public function searchAnime(string $keyword, int $page = 1): array
     {
-        $cacheKey = 'search:' . md5($keyword . ':' . $page);
+        // Own namespace — api/search.php's legacy_search_payload() writes to
+        // 'search:*' with a different payload shape ({data,meta} vs
+        // {results,lastPage,total}); sharing the key meant whichever wrote
+        // first poisoned the other's read for the cache's full TTL, e.g. a
+        // header-dropdown search for a title would make the full /search
+        // results page show "No results" for that same title for an hour.
+        $cacheKey = 'search_svc:' . md5($keyword . ':' . $page);
         $cached = getCache($cacheKey);
         if ($cached && is_array($cached)) {
             return ['results' => $cached['results'] ?? [], 'lastPage' => $cached['lastPage'] ?? 1, 'total' => $cached['total'] ?? 0];

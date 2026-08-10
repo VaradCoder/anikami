@@ -84,6 +84,36 @@ if (empty($trendingRows)) {
     $trendingRows = array_slice($airingItems, 0, 10);
 }
 
+// ── 2b. Top Anime sidebar widget — real site traffic, Day/Week/Month ──
+// Same resolve-against-already-fetched-lists strategy as the trending
+// block above (no extra HTTP calls on the common case), reused per window.
+function ak_resolve_ranked_rows(array $dbRows, array $lookupMap): array {
+    $out = [];
+    foreach ($dbRows as $row) {
+        $aid = (string)($row['anime_id'] ?? '');
+        if ($aid === '') continue;
+        if (isset($lookupMap[$aid])) {
+            $out[] = $lookupMap[$aid];
+        } else {
+            $p = legacy_get_anime_payload($aid);
+            if (!empty($p['name'])) {
+                $out[] = [
+                    'animeId'    => $aid,
+                    'animeTitle' => $p['name'],
+                    'animeImg'   => $p['imageUrl'] ?? '',
+                ];
+            }
+        }
+    }
+    return $out;
+}
+$_topAnimeLookup = $_lookupMap ?? [];
+$topAnimeByWindow = [
+    'day'   => !empty($_trendingDb) ? array_slice($trendingRows, 0, 10) : ak_resolve_ranked_rows(app_trending_anime('day', 10), $_topAnimeLookup),
+    'week'  => ak_resolve_ranked_rows(app_trending_anime('week', 10), $_topAnimeLookup),
+    'month' => ak_resolve_ranked_rows(app_trending_anime('month', 10), $_topAnimeLookup),
+];
+
 // ── 3. Hero slides (first 5 of airing) ───────────────────────────────
 $heroSlides = array_slice($airingItems, 0, 5);
 
@@ -431,6 +461,44 @@ $_fallbackImg = $websiteUrl . '/files/images/no_poster.jpg';
 <!-- ── RIGHT SIDEBAR ──────────────────────────────────────────────── -->
 <div id="ak-sidebar">
 
+  <!-- Top Anime — ranked by this site's own traffic (metrics_events), not
+       an external "popularity" number. Day/Week/Month are all rendered
+       server-side (app_trending_anime is a fast local SQL query, not an
+       API call) and swapped client-side — no extra request per tab. -->
+  <div class="ak-sidebar-section">
+    <div class="ak-sidebar-title-row">
+      <div class="ak-sidebar-title"><i class="fas fa-ranking-star"></i> Top Anime</div>
+      <div class="ak-topanime-tabs" id="akTopAnimeTabs">
+        <button type="button" class="ak-topanime-tab active" data-window="day">Day</button>
+        <button type="button" class="ak-topanime-tab" data-window="week">Week</button>
+        <button type="button" class="ak-topanime-tab" data-window="month">Month</button>
+      </div>
+    </div>
+    <?php foreach ($topAnimeByWindow as $window => $rows): ?>
+    <div class="ak-tai-list ak-topanime-panel" data-window="<?=$window?>" style="<?=$window!=='day'?'display:none':''?>">
+      <?php foreach ($rows as $i => $item):
+        $sid    = app_e($item['animeId'] ?? '');
+        $stitle = app_e($item['animeTitle'] ?? 'Unknown');
+        $simg   = app_e(app_safe_image($item['animeImg'] ?? ''));
+        $isTop3 = $i < 3;
+      ?>
+      <a class="ak-tai-item <?=$isTop3?'top3':''?>" href="<?=$websiteUrl?>/anime/<?=$sid?>">
+        <div class="ak-tai-num"><?=$i+1?></div>
+        <div class="ak-tai-thumb">
+          <img src="<?=$simg ?: $_fallbackImg?>" alt="<?=$stitle?>" loading="lazy" onerror="this.src='<?=$_fallbackImg?>'">
+        </div>
+        <div class="ak-tai-info">
+          <div class="ak-tai-title"><?=$stitle?></div>
+        </div>
+      </a>
+      <?php endforeach; ?>
+      <?php if (empty($rows)): ?>
+      <div style="padding:14px 4px;font-size:12px;color:var(--text-muted)">Not enough traffic yet this <?=$window?> — check back soon.</div>
+      <?php endif; ?>
+    </div>
+    <?php endforeach; ?>
+  </div>
+
   <!-- Top Airing -->
   <div class="ak-sidebar-section">
     <div class="ak-sidebar-title"><i class="fas fa-bolt"></i> Top Airing</div>
@@ -508,6 +576,18 @@ $_fallbackImg = $websiteUrl . '/files/images/no_poster.jpg';
      ================================================================ -->
 <script>
 (function(){
+
+/* ── TOP ANIME (Day/Week/Month) — all three panels are server-rendered,
+   this just toggles visibility, no fetch needed ── */
+var topAnimeTabs = document.querySelectorAll('.ak-topanime-tab');
+var topAnimePanels = document.querySelectorAll('.ak-topanime-panel');
+topAnimeTabs.forEach(function(tab){
+  tab.addEventListener('click', function(){
+    var win = tab.dataset.window;
+    topAnimeTabs.forEach(function(t){ t.classList.toggle('active', t === tab); });
+    topAnimePanels.forEach(function(p){ p.style.display = (p.dataset.window === win) ? '' : 'none'; });
+  });
+});
 
 /* ── HERO SLIDER ─────────────────────────────────────────────────── */
 var slides   = document.querySelectorAll('.ak-hero-slide');

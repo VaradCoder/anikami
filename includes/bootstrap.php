@@ -28,4 +28,5 @@ require_once __DIR__ . '/tracking.php';
 require_once __DIR__ . '/admin_tools.php';
 require_once __DIR__ . '/comments.php';
 require_once __DIR__ . '/reviews.php';
+require_once __DIR__ . '/community.php';
 require_once __DIR__ . '/analytics.php';

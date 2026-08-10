@@ -254,6 +254,56 @@ function app_db_migrate(PDO $pdo): void
             FOREIGN KEY(review_id) REFERENCES reviews(id) ON DELETE CASCADE,
             FOREIGN KEY(user_id) REFERENCES users(id) ON DELETE CASCADE
         )',
+        // Community board — general discussion, not tied to a specific anime
+        // (that's what `comments` is for). Mirrors the comments table's shape
+        // (pin/hide/reports reuse the same conventions) so admin moderation
+        // tooling generalizes instead of needing a parallel code path.
+        'CREATE TABLE IF NOT EXISTS community_posts (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            user_id INTEGER NOT NULL,
+            category TEXT NOT NULL DEFAULT "general",
+            title TEXT NOT NULL,
+            body TEXT NOT NULL,
+            is_pinned INTEGER NOT NULL DEFAULT 0,
+            is_hidden INTEGER NOT NULL DEFAULT 0,
+            created_at TEXT NOT NULL,
+            edited_at TEXT,
+            FOREIGN KEY(user_id) REFERENCES users(id) ON DELETE CASCADE
+        )',
+        'CREATE TABLE IF NOT EXISTS community_replies (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            post_id INTEGER NOT NULL,
+            user_id INTEGER NOT NULL,
+            parent_id INTEGER,
+            body TEXT NOT NULL,
+            is_hidden INTEGER NOT NULL DEFAULT 0,
+            created_at TEXT NOT NULL,
+            edited_at TEXT,
+            FOREIGN KEY(post_id) REFERENCES community_posts(id) ON DELETE CASCADE,
+            FOREIGN KEY(user_id) REFERENCES users(id) ON DELETE CASCADE,
+            FOREIGN KEY(parent_id) REFERENCES community_replies(id) ON DELETE CASCADE
+        )',
+        'CREATE TABLE IF NOT EXISTS community_post_likes (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            post_id INTEGER NOT NULL,
+            user_id INTEGER NOT NULL,
+            created_at TEXT NOT NULL,
+            UNIQUE(post_id, user_id),
+            FOREIGN KEY(post_id) REFERENCES community_posts(id) ON DELETE CASCADE,
+            FOREIGN KEY(user_id) REFERENCES users(id) ON DELETE CASCADE
+        )',
+        'CREATE TABLE IF NOT EXISTS community_reply_likes (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            reply_id INTEGER NOT NULL,
+            user_id INTEGER NOT NULL,
+            created_at TEXT NOT NULL,
+            UNIQUE(reply_id, user_id),
+            FOREIGN KEY(reply_id) REFERENCES community_replies(id) ON DELETE CASCADE,
+            FOREIGN KEY(user_id) REFERENCES users(id) ON DELETE CASCADE
+        )',
+        'CREATE INDEX IF NOT EXISTS idx_community_posts_board ON community_posts(is_hidden, is_pinned, created_at)',
+        'CREATE INDEX IF NOT EXISTS idx_community_posts_category ON community_posts(category, is_hidden, created_at)',
+        'CREATE INDEX IF NOT EXISTS idx_community_replies_post ON community_replies(post_id, created_at)',
     ];
 
     foreach ($schema as $sql) {
@@ -302,10 +352,13 @@ function app_db_migrate(PDO $pdo): void
         $insert->execute([$adminEmail, $adminUser, $adminPass, 'admin', $now, $now]);
     }
 
+    // VidLink first: it's the only provider we've wired real postMessage
+    // player events for (resume tracking, auto-next through the iframe —
+    // see streaming.php). VidNest still works fine as sub/dub fallback.
     $defaultProviders = [
-        ['vidnest', 'VidNest (Sub)', 0],
-        ['vidnest-dub', 'VidNest (Dub)', 1],
-        ['vidlink', 'VidLink', 2],
+        ['vidlink', 'VidLink', 0],
+        ['vidnest', 'VidNest (Sub)', 1],
+        ['vidnest-dub', 'VidNest (Dub)', 2],
     ];
     $seedStmt = $pdo->prepare('INSERT OR IGNORE INTO stream_providers(provider_key, name, priority, enabled, updated_at) VALUES (?, ?, ?, 1, ?)');
     foreach ($defaultProviders as [$key, $name, $priority]) {

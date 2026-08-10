@@ -111,6 +111,16 @@ $catalogPayloadDbg = app_debug_api_context('/api/catalog.php', ['section' => 'po
                                     $isDub = legacy_title_is_dub($title);
                                 ?>
                                     <div class="flw-item">
+                                        <div class="film-poster">
+                                            <img class="film-poster-img lazyload"
+                                                data-src="<?=app_e(app_safe_image($az['animeImg'] ?? ''))?>"
+                                                src="<?=$websiteUrl?>/files/images/no_poster.jpg"
+                                                alt="<?=app_e($title)?>">
+                                            <a class="film-poster-ahref"
+                                                href="<?=$websiteUrl?>/anime/<?=app_e($animeId)?>"
+                                                title="<?=app_e($title)?>"
+                                                data-jname="<?=app_e($title)?>"><i class="fas fa-play"></i></a>
+                                        </div>
                                         <div class="film-detail">
                                             <h3 class="film-name">
                                                 <a

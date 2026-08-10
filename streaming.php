@@ -629,6 +629,8 @@ flush();
           <?php endif; ?>
         </div>
         <div class="ak-sbar-right">
+          <button class="ak-sbar-light" id="autoPlayToggle"><i class="fas fa-play"></i> Auto Play</button>
+          <button class="ak-sbar-light" id="autoNextToggle"><i class="fas fa-forward"></i> Auto Next</button>
           <button class="ak-sbar-light" id="lightToggle"><i class="fas fa-lightbulb"></i> Light</button>
         </div>
       </div>
@@ -1146,6 +1148,44 @@ flush();
     }
   }
 
+  /* ── Auto Play / Auto Next preferences (persisted, default on) ──
+     Mirrors the toggle row providers like Anikoto show above their player.
+     Applied to embeds that document query-param support (VidLink) and to
+     our own postMessage-driven next-episode overlay for any provider that
+     tells us it ended. ── */
+  function readPref(key) { var v = localStorage.getItem(key); return v === null ? true : v === '1'; }
+  var autoPlayEnabled = readPref('ak_autoplay');
+  var autoNextEnabled = readPref('ak_autonext');
+  var lastKnownPosition = resumeSeconds > 0 ? resumeSeconds : 0;
+
+  /* ── Build a provider-aware embed URL ──
+     VidLink and VidNest both document query params for resume position,
+     autoplay, and hiding their own duplicate prev/next-episode controls
+     (we already show those via the corner nav) — see vidlink.pro and
+     vidnest.fun API docs. Anything else is passed through unmodified. */
+  function buildEmbedUrl(srv) {
+    var url = srv.url || '';
+    try {
+      var u = new URL(url);
+      if (u.hostname.indexOf('vidlink.pro') !== -1) {
+        if (lastKnownPosition > 5) u.searchParams.set('startAt', String(Math.floor(lastKnownPosition)));
+        u.searchParams.set('autoplay', autoPlayEnabled ? 'true' : 'false');
+        u.searchParams.set('nextbutton', 'false'); // we render our own next-episode overlay
+        u.searchParams.set('title', 'false');
+        u.searchParams.set('poster', 'false');
+        u.searchParams.set('primaryColor', 'c8102e');
+        u.searchParams.set('iconColor', 'c8102e');
+      } else if (u.hostname.indexOf('vidnest.fun') !== -1) {
+        if (lastKnownPosition > 5) u.searchParams.set('startAt', String(Math.floor(lastKnownPosition)));
+        u.searchParams.set('prevepisode', 'hide');
+        u.searchParams.set('nextepisode', 'hide'); // avoid a second, out-of-sync nav UI
+      }
+      return u.toString();
+    } catch (e) {
+      return url; // malformed/relative URL — fall back to the raw value
+    }
+  }
+
   /* ── Player logic split ── */
   function loadIframePlayer(srv) {
     if (!iframe) return;
@@ -1154,7 +1194,7 @@ flush();
     if (video) { video.pause(); video.removeAttribute('src'); video.style.display = 'none'; }
     vpHide(); // hide custom controls — iframe has its own built-in controls
 
-    iframe.src = srv.url;
+    iframe.src = buildEmbedUrl(srv);
     iframe.style.display = 'block';
 
     // iframe load event will hide loader
@@ -2129,7 +2169,10 @@ flush();
     if (vpCCBtn)    vpCCBtn.classList.remove('on');
   }
 
-  /* ── Save progress every 20s ── */
+  /* ── Save progress every 20s ──
+     lastKnownPosition is kept current by the direct-video timeupdate handler
+     AND by the VidLink postMessage listener below, so resume/continue-watching
+     works for iframe playback too, not just direct HLS/mp4 streams. */
   function saveProgress(pos) {
     if (!isLoggedIn) return;
     fetch('<?=$websiteUrl?>/api/user.php', {
@@ -2139,10 +2182,71 @@ flush();
       keepalive: true
     }).catch(function(){});
   }
-  setInterval(function(){ saveProgress(video ? (video.currentTime||0) : 0); }, 20000);
+  setInterval(function(){
+    var pos = video ? (video.currentTime || 0) : lastKnownPosition;
+    saveProgress(pos);
+  }, 20000);
   window.addEventListener('beforeunload', function(){
-    saveProgress(video ? (video.currentTime||0) : 0);
+    saveProgress(video ? (video.currentTime||0) : lastKnownPosition);
   });
+
+  /* ── VidLink player events via postMessage ──
+     Documented at vidlink.pro: PLAYER_EVENT carries play/pause/seeked/ended/
+     timeupdate with currentTime+duration. This is what lets Auto Next and
+     resume-position tracking work through an iframe we don't otherwise
+     control. Other providers (VidNest) don't document a stable postMessage
+     contract, so we don't guess at their shape here — same-origin check
+     below means unrelated messages are ignored regardless. */
+  var _lastProgressSaveAt = 0;
+  window.addEventListener('message', function(ev) {
+    if (ev.origin !== 'https://vidlink.pro') return;
+    var msg = ev.data;
+    if (!msg || msg.type !== 'PLAYER_EVENT' || !msg.data) return;
+    var pe = msg.data;
+    if (typeof pe.currentTime === 'number' && pe.currentTime > 0) {
+      lastKnownPosition = pe.currentTime;
+    }
+    if (pe.event === 'timeupdate') {
+      var now = Date.now();
+      if (now - _lastProgressSaveAt > 15000) {
+        _lastProgressSaveAt = now;
+        saveProgress(lastKnownPosition);
+      }
+      if (autoNextEnabled && pe.duration && (pe.duration - pe.currentTime) <= 30) {
+        startNextCountdown();
+      }
+    } else if (pe.event === 'ended') {
+      saveProgress(lastKnownPosition);
+      if (autoNextEnabled && nextUrl && !_nextCountdownCancelled) {
+        window.location.href = nextUrl;
+      }
+    }
+  });
+
+  /* ── Auto Play / Auto Next toggle buttons ── */
+  var autoPlayBtn = document.getElementById('autoPlayToggle');
+  var autoNextBtn = document.getElementById('autoNextToggle');
+  function syncPrefButton(btn, enabled) { if (btn) btn.classList.toggle('active', enabled); }
+  syncPrefButton(autoPlayBtn, autoPlayEnabled);
+  syncPrefButton(autoNextBtn, autoNextEnabled);
+  if (autoPlayBtn) {
+    autoPlayBtn.addEventListener('click', function() {
+      autoPlayEnabled = !autoPlayEnabled;
+      localStorage.setItem('ak_autoplay', autoPlayEnabled ? '1' : '0');
+      syncPrefButton(autoPlayBtn, autoPlayEnabled);
+      // Re-apply immediately if the active server is VidLink (it reads autoplay from the URL)
+      var srv = servers[serverIndex];
+      if (srv && (srv.url || '').indexOf('vidlink.pro') !== -1) loadIframePlayer(srv);
+    });
+  }
+  if (autoNextBtn) {
+    autoNextBtn.addEventListener('click', function() {
+      autoNextEnabled = !autoNextEnabled;
+      localStorage.setItem('ak_autonext', autoNextEnabled ? '1' : '0');
+      syncPrefButton(autoNextBtn, autoNextEnabled);
+      if (!autoNextEnabled) cancelNextCountdown();
+    });
+  }
 })();
 </script>
 </body>

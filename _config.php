@@ -640,12 +640,75 @@ query ($search: String, $perPage: Int) {
   }
 }
 GQL;
+    $normalized = str_replace('-', ' ', $search);
     $resp = legacy_anilist_graphql($query, [
-        'search'  => str_replace('-', ' ', $search),
+        'search'  => $normalized,
         'perPage' => max(1, min(50, $limit)),
     ]);
     $rows = $resp['data']['Page']['media'] ?? [];
+
+    if (empty($rows)) {
+        $stripped = legacy_strip_type_suffix($normalized);
+        if (strtolower($stripped) !== strtolower($normalized)) {
+            $resp = legacy_anilist_graphql($query, [
+                'search'  => $stripped,
+                'perPage' => max(1, min(50, $limit)),
+            ]);
+            $rows = $resp['data']['Page']['media'] ?? [];
+        }
+    }
+
     return is_array($rows) ? $rows : [];
+}
+
+// Only genres that exist as first-class AniList genres — AniList's genre
+// list is much smaller than Jikan's (many Jikan "genres" are AniList
+// "tags" instead, which this can't filter by). Jikan genre id -> AniList
+// genre name; slugs not listed here just get no AniList fallback when
+// Jikan is down (empty results until Jikan recovers, same as before this
+// existed — not worse, just not fixed for that subset).
+function legacy_anilist_genre_name(int $genreId): ?string
+{
+    static $reverseMap = null;
+    if ($reverseMap === null) {
+        $slugToAnilist = [
+            'action' => 'Action', 'adventure' => 'Adventure', 'comedy' => 'Comedy',
+            'drama' => 'Drama', 'ecchi' => 'Ecchi', 'fantasy' => 'Fantasy',
+            'hentai' => 'Hentai', 'horror' => 'Horror', 'mecha' => 'Mecha',
+            'music' => 'Music', 'mystery' => 'Mystery', 'psychological' => 'Psychological',
+            'romance' => 'Romance', 'sci-fi' => 'Sci-Fi', 'slice-of-life' => 'Slice of Life',
+            'sports' => 'Sports', 'supernatural' => 'Supernatural', 'thriller' => 'Thriller',
+        ];
+        $reverseMap = [];
+        foreach (legacy_get_genre_map() as $slug => $id) {
+            if (isset($slugToAnilist[$slug]) && !isset($reverseMap[$id])) {
+                $reverseMap[$id] = $slugToAnilist[$slug];
+            }
+        }
+    }
+    return $reverseMap[$genreId] ?? null;
+}
+
+function legacy_anilist_genre_rows(string $genreName, int $page = 1, int $perPage = 24): array
+{
+    $query = <<<'GQL'
+query ($genre: String, $page: Int, $perPage: Int) {
+  Page(page: $page, perPage: $perPage) {
+    pageInfo { lastPage }
+    media(genre: $genre, type: ANIME, sort: TRENDING_DESC) {
+      id idMal format status seasonYear episodes
+      coverImage { extraLarge large medium }
+      title { romaji english native }
+      genres
+    }
+  }
+}
+GQL;
+    $resp = legacy_anilist_graphql($query, ['genre' => $genreName, 'page' => $page, 'perPage' => max(1, min(50, $perPage))]);
+    return [
+        'rows' => is_array($resp['data']['Page']['media'] ?? null) ? $resp['data']['Page']['media'] : [],
+        'lastPage' => (int)($resp['data']['Page']['pageInfo']['lastPage'] ?? 1),
+    ];
 }
 
 /**
@@ -663,6 +726,11 @@ function legacy_jikan_anilist_fallback(string $endpoint): array
     $rows = [];
     if (preg_match('#^anime\?#', $endpoint) && preg_match('/[?&]q=([^&]+)/', $endpoint, $mq)) {
         $rows = legacy_anilist_search_rows(urldecode($mq[1]), $limit);
+    } elseif (preg_match('#^anime\?#', $endpoint) && preg_match('/[?&]genres=(\d+)/', $endpoint, $mg)) {
+        $genreName = legacy_anilist_genre_name((int)$mg[1]);
+        if ($genreName !== null) {
+            $rows = legacy_anilist_genre_rows($genreName, $page, $limit)['rows'];
+        }
     } else {
         $mode = null;
         if (strpos($endpoint, 'filter=airing') !== false)            { $mode = 'airing'; }
@@ -902,6 +970,30 @@ function legacy_anilist_graphql(string $query, array $variables = []): array
     }
 
     return $final;
+}
+
+// AniList's `search` is a literal/strict match — unlike Jikan's fuzzy search,
+// appending a type descriptor like "Movie"/"TV"/"OVA" (which Jikan titles and
+// this site's own catalog links often carry, e.g. "Jujutsu Kaisen 0 Movie")
+// makes it return zero rows even though the anime exists. Strip the descriptor
+// and retry once before giving up.
+function legacy_strip_type_suffix(string $title): string
+{
+    $stripped = preg_replace('/\s*[\(\[]\s*(?:TV|Movie|OVA|ONA|Special)\s*[\)\]]\s*$/i', '', $title);
+    $stripped = preg_replace('/\s+(?:TV|Movie|OVA|ONA|Special)\s*$/i', '', $stripped);
+    $stripped = trim((string)$stripped);
+    return $stripped !== '' ? $stripped : $title;
+}
+
+function legacy_pick_title(...$candidates)
+{
+    foreach ($candidates as $candidate) {
+        $trimmed = trim((string)($candidate ?? ''));
+        if ($trimmed !== '') {
+            return $trimmed;
+        }
+    }
+    return 'Unknown';
 }
 
 function legacy_slugify($text)
@@ -1180,6 +1272,19 @@ GQL;
     ]);
 
     $rows = $resp['data']['Page']['media'] ?? [];
+
+    if (empty($rows)) {
+        $stripped = legacy_strip_type_suffix($search);
+        if (strtolower($stripped) !== strtolower($search)) {
+            $resp = legacy_anilist_graphql($query, [
+                'search' => $stripped,
+                'page' => 1,
+                'perPage' => 10,
+            ]);
+            $rows = $resp['data']['Page']['media'] ?? [];
+        }
+    }
+
     $best = is_array($rows) ? legacy_pick_best_anilist_match(legacy_slugify($animeSlug), $rows) : null;
     $cache[$animeSlug] = is_array($best) ? $best : [];
     return $cache[$animeSlug];
@@ -1188,7 +1293,7 @@ GQL;
 
 function legacy_anilist_title(array $row, string $fallback = ''): string
 {
-    return (string)($row['title']['english'] ?? $row['title']['romaji'] ?? $row['title']['native'] ?? $fallback);
+    return legacy_pick_title($row['title']['english'] ?? null, $row['title']['romaji'] ?? null, $row['title']['native'] ?? null, $fallback);
 }
 
 function legacy_anilist_to_legacy_payload(array $row, string $animeSlug): array
@@ -1309,6 +1414,85 @@ function legacy_anilist_media_list(string $mode = 'trending', int $page = 1, int
     ];
 }
 
+/**
+ * Airing schedule for one UTC day, built from AniList's airingSchedules —
+ * NOT Jikan's /schedules endpoint. Jikan has been observed 504ing/timing
+ * out against MAL repeatedly during development (see other legacy_* fallback
+ * comments in this file); AniList has been reliable throughout, so it's the
+ * primary source here rather than a fallback bolted on afterward.
+ * $dayOffset: 0 = today (UTC), 1 = tomorrow, etc.
+ */
+function legacy_anilist_schedule_day(int $dayOffset = 0): array
+{
+    $dayStart = strtotime(gmdate('Y-m-d 00:00:00')) + $dayOffset * 86400;
+    $dayEnd = $dayStart + 86400 - 1;
+
+    $cacheKey = 'anilist_schedule:' . $dayStart;
+    $cached = getCache($cacheKey);
+    if (is_array($cached)) {
+        return $cached;
+    }
+
+    $query = <<<'GQL'
+query ($start: Int, $end: Int, $page: Int) {
+  Page(page: $page, perPage: 50) {
+    pageInfo { hasNextPage }
+    airingSchedules(airingAt_greater: $start, airingAt_lesser: $end, sort: TIME) {
+      airingAt
+      episode
+      media {
+        id
+        idMal
+        format
+        episodes
+        title { romaji english native }
+        coverImage { extraLarge large medium }
+      }
+    }
+  }
+}
+GQL;
+
+    $out = [];
+    $page = 1;
+    do {
+        $resp = legacy_anilist_graphql($query, ['start' => $dayStart, 'end' => $dayEnd, 'page' => $page]);
+        $rows = $resp['data']['Page']['airingSchedules'] ?? [];
+        if (!is_array($rows) || empty($rows)) break;
+        foreach ($rows as $row) {
+            $media = $row['media'] ?? null;
+            if (!is_array($media)) continue;
+            $title = legacy_anilist_title($media, 'Unknown');
+            $slug = legacy_slugify($title);
+            $item = legacy_normalize_item(legacy_anilist_to_legacy_payload($media, $slug), $slug);
+            $item['airingAt'] = (int)($row['airingAt'] ?? 0);
+            $item['episodeNum'] = (int)($row['episode'] ?? 0);
+            $out[] = $item;
+        }
+        $hasNext = (bool)($resp['data']['Page']['pageInfo']['hasNextPage'] ?? false);
+        $page++;
+    } while ($hasNext && $page <= 4); // cap: 200 airings/day is far more than any real day has
+
+    setCache($cacheKey, $out, 1800);
+    return $out;
+}
+
+function legacy_anilist_id_by_mal_id(int $malId): int
+{
+    if ($malId <= 0) {
+        return 0;
+    }
+    $query = <<<'GQL'
+query ($malId: Int) {
+  Media(idMal: $malId, type: ANIME) {
+    id
+  }
+}
+GQL;
+    $resp = legacy_anilist_graphql($query, ['malId' => $malId]);
+    return (int)($resp['data']['Media']['id'] ?? 0);
+}
+
 function legacy_resolve_anime_by_slug($animeSlug)
 {
     static $cache = [];
@@ -1332,10 +1516,22 @@ function legacy_resolve_anime_by_slug($animeSlug)
         return $cache[$animeSlug];
     }
 
+    // AniList's own title search found nothing usable for this slug (common for
+    // alternate/abbreviated titles). Fall back to Jikan's title search, then use
+    // the MAL id it gives us to look AniList back up by idMal — a 1:1 exact match,
+    // not fuzzy title matching. Without this, $best has no anilist_id, streaming.php
+    // gets $_fbAni = 0, and the episode player renders with zero servers.
     $query = str_replace('-', ' ', $animeSlug);
     $resp = fetchAPI("anime?q=" . rawurlencode($query) . "&limit=10");
     $data = isset($resp["data"]) && is_array($resp["data"]) ? $resp["data"] : [];
     $best = legacy_pick_best_jikan_match($animeSlug, $data);
+    if (is_array($best)) {
+        $malId = (int)($best['mal_id'] ?? 0);
+        $aniId = legacy_anilist_id_by_mal_id($malId);
+        if ($aniId > 0) {
+            $best['anilist_id'] = $aniId;
+        }
+    }
     $cache[$animeSlug] = $best ?: [];
     if (!empty($cache[$animeSlug])) {
         setCache($persistKey, $cache[$animeSlug], 21600);
@@ -1409,7 +1605,7 @@ function legacy_extract_episode_count_from_anitaku($sourceSlug)
 
 function legacy_normalize_item($row, $sourceSlug = "")
 {
-    $title = $row["title_english"] ?? $row["title"] ?? $row["title_japanese"] ?? "Unknown";
+    $title = legacy_pick_title($row["title_english"] ?? null, $row["title"] ?? null, $row["title_japanese"] ?? null);
     $slug = !empty($sourceSlug) ? $sourceSlug : legacy_slugify($title);
     $img = $row["images"]["jpg"]["large_image_url"] ?? $row["images"]["jpg"]["image_url"] ?? "";
     $year = $row["year"] ?? ($row["aired"]["prop"]["from"]["year"] ?? "");
@@ -1515,7 +1711,7 @@ function legacy_get_anime_payload($animeSlug)
         ];
     }
 
-    $title = $anime["title_english"] ?? $anime["title"] ?? $anime["title_japanese"] ?? legacy_unslug($animeSlug);
+    $title = legacy_pick_title($anime["title_english"] ?? null, $anime["title"] ?? null, $anime["title_japanese"] ?? null, legacy_unslug($animeSlug));
     $sourceSlug = legacy_resolve_source_slug($title, $animeSlug);
 
     $full = fetchAPI("anime/" . (int)$anime["mal_id"] . "/full");
@@ -1658,7 +1854,13 @@ function legacy_get_watch_context(string $animeSlug): array
     $needsFull = empty($anime['synopsis']) && empty($anime['genres']);
     $full = ($malId > 0 && $needsFull) ? fetchAPI("anime/" . $malId . "/full") : [];
     $animeData = !empty($full['data']) && is_array($full['data']) ? $full['data'] : $anime;
-    $title = $animeData['title_english'] ?? $animeData['title'] ?? $animeData['title_japanese'] ?? legacy_unslug($animeSlug);
+    // Jikan's /full payload has no anilist_id/mal_id keys — carry them over from
+    // $anime (the resolved payload) so streaming.php can still find a stream server.
+    if (!empty($full['data'])) {
+        $animeData['anilist_id'] = (int)($anime['anilist_id'] ?? 0);
+        $animeData['mal_id'] = $malId;
+    }
+    $title = legacy_pick_title($animeData['title_english'] ?? null, $animeData['title'] ?? null, $animeData['title_japanese'] ?? null, legacy_unslug($animeSlug));
     $sourceSlug = legacy_resolve_source_slug($title, $animeSlug);
 
     // Use Jikan's episode count directly — anitaku scraping is disabled for performance
@@ -1758,7 +1960,7 @@ function legacy_search_payload($keyword, $page = 1)
     $out = [];
 
     foreach ($data as $row) {
-        $title = $row["title_english"] ?? $row["title"] ?? "Unknown";
+        $title = legacy_pick_title($row["title_english"] ?? null, $row["title"] ?? null);
         $slug = legacy_slugify($title);
 
         $img = $row["images"]["jpg"]["large_image_url"]
@@ -1822,7 +2024,7 @@ function legacy_api_array($endpoint)
         $resp = fetchAPI("anime?q=" . rawurlencode($letter) . "&order_by=title&sort=asc&limit=25&page=" . $page);
         $out = [];
         foreach (($resp["data"] ?? []) as $row) {
-            $title = $row["title_english"] ?? $row["title"] ?? "";
+            $title = legacy_pick_title($row["title_english"] ?? null, $row["title"] ?? null);
             if (strtoupper(substr($title, 0, 1)) !== $letter) {
                 continue;
             }
@@ -1945,7 +2147,7 @@ function legacy_api_array($endpoint)
         $resp = fetchAPI("top/anime?filter=airing&limit=25");
         $out = [];
         foreach (($resp["data"] ?? []) as $row) {
-            $title = $row["title_english"] ?? $row["title"] ?? "Unknown";
+            $title = legacy_pick_title($row["title_english"] ?? null, $row["title"] ?? null);
             $slug = legacy_resolve_source_slug($title, legacy_slugify($title));
             $out[] = ["animeId" => "/anime/" . $slug];
         }

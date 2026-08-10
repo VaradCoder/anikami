@@ -9,6 +9,7 @@ $_akIsHome    = in_array(basename($_akReqPath), ['', 'home.php']) || $_akReqPath
 $_akIsPopular = strpos($_akReqPath, '/popular') !== false;
 $_akIsMovies  = strpos($_akReqPath, '/type/movies') !== false;
 $_akIsNew     = strpos($_akReqPath, '/new-season') !== false || strpos($_akReqPath, '/season/') !== false;
+$_akIsCommunity = strpos($_akReqPath, '/community') !== false;
 ?>
 <!-- Navigation progress bar -->
 <div id="ak-nprog"><div id="ak-nprog-bar"></div></div>
@@ -50,6 +51,7 @@ $_akIsNew     = strpos($_akReqPath, '/new-season') !== false || strpos($_akReqPa
       <a href="<?=$websiteUrl?>/popular"        class="<?=$_akIsPopular ? 'active' : ''?>">Popular</a>
       <a href="<?=$websiteUrl?>/new-season"     class="<?=$_akIsNew     ? 'active' : ''?>">New Season</a>
       <a href="<?=$websiteUrl?>/type/movies"    class="<?=$_akIsMovies  ? 'active' : ''?>">Movies</a>
+      <a href="<?=$websiteUrl?>/community"      class="<?=$_akIsCommunity ? 'active' : ''?>">Community</a>
       <a href="<?=$websiteUrl?>/random" rel="nofollow">Random</a>
     </nav>
 
@@ -102,6 +104,7 @@ $_akIsNew     = strpos($_akReqPath, '/new-season') !== false || strpos($_akReqPa
   <a class="ak-lnav-item <?=$_akIsMovies?'active':''?>" href="<?=$websiteUrl?>/type/movies"><i class="fas fa-film"></i>Movies</a>
   <a class="ak-lnav-item" href="<?=$websiteUrl?>/random" rel="nofollow"><i class="fas fa-random"></i>Random</a>
   <a class="ak-lnav-item" href="<?=$websiteUrl?>/schedule"><i class="fas fa-calendar"></i>Schedule</a>
+  <a class="ak-lnav-item <?=$_akIsCommunity?'active':''?>" href="<?=$websiteUrl?>/community"><i class="fas fa-comments"></i>Community</a>
   <a class="ak-lnav-item" href="<?=$websiteUrl?>/genre"><i class="fas fa-tags"></i>Genres</a>
 </div>
 
@@ -112,6 +115,7 @@ $_akIsNew     = strpos($_akReqPath, '/new-season') !== false || strpos($_akReqPa
   <a class="ak-lnav-item <?=$_akIsPopular?'active':''?>" href="<?=$websiteUrl?>/popular"><i class="fas fa-fire"></i>Popular</a>
   <a class="ak-lnav-item" href="<?=$websiteUrl?>/random" rel="nofollow"><i class="fas fa-random"></i>Random</a>
   <a class="ak-lnav-item" href="<?=$websiteUrl?>/schedule"><i class="fas fa-calendar-alt"></i>Schedule</a>
+  <a class="ak-lnav-item <?=$_akIsCommunity?'active':''?>" href="<?=$websiteUrl?>/community"><i class="fas fa-comments"></i>Community</a>
   <a class="ak-lnav-item" href="<?=$websiteUrl?>/genre"><i class="fas fa-tags"></i>Genres</a>
   <a class="ak-lnav-item <?=$_akIsMovies?'active':''?>" href="<?=$websiteUrl?>/type/movies"><i class="fas fa-film"></i>Movies</a>
 </nav>
